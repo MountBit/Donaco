@@ -1,0 +1,492 @@
+/* Header Styles */
+body {
+    padding-top: 65px; /* Espaço para o header fixo */
+}
+
+.fixed-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    z-index: 1030;
+    padding: 10px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header-logo {
+    margin-right: 2rem;
+}
+
+.header-stats {
+    display: flex;
+    align-items: center;
+}
+
+.project-info {
+    display: flex;
+    align-items: center;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: fit-content;
+    padding: 0 1.5rem;
+    position: relative;
+}
+
+.stat-item:not(:last-child):after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 70%;
+    width: 1px;
+    background-color: #dee2e6;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: #6c757d;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    text-transform: uppercase;
+}
+
+.stat-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.stat-value.success {
+    color: #198754;
+}
+
+.project-name {
+    font-weight: 600;
+    color: #F7921E;
+    font-size: 1rem;
+    padding-right: 3rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+.project-supporters {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: fit-content;
+    position: relative;
+    padding-right: 1.5rem;
+}
+
+.project-supporters:after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 70%;
+    width: 1px;
+    background-color: #dee2e6;
+}
+
+/* Project Stats Carousel */
+.project-stats-carousel {
+    overflow: hidden;
+    position: relative;
+}
+
+.project-stats {
+    display: none;
+    animation: fadeInOut 1s ease-in-out;
+}
+
+.project-stats.active {
+    display: flex;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* Progress Colors */
+.progress-danger {
+    color: #dc3545;
+}
+.progress-warning {
+    color: #ffc107;
+}
+.progress-success {
+    color: #28a745;
+}
+
+/* Ranking Styles */
+.sticky-ranking {
+    position: sticky;
+    top: 20px;
+    transition: all 0.3s ease;
+    margin-left: auto;
+}
+
+/* Recent Donations Styles */
+.bg-soft-yellow {
+    background-color: #fffaf3;
+}
+
+.title-underline {
+    width: 60px;
+    height: 4px;
+    background: var(--bs-warning);
+    margin: 0 auto;
+    border-radius: 2px;
+}
+
+.donation-card {
+    background: #ffffff;
+    border-radius: 16px;
+    transition: all 0.3s ease;
+}
+
+.shadow-hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.shadow-hover:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #f8f9fa;
+    flex-shrink: 0;
+}
+
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.bg-warning-soft {
+    background-color: rgba(255, 193, 7, 0.15);
+}
+
+.donation-amount .badge {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+    font-weight: 600;
+}
+
+.message-text {
+    margin-bottom: 0;
+    line-height: 1.5;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+/* Modal Styles */
+.donation-modal {
+    border-radius: 1rem;
+    max-height: 90vh;
+    overflow: hidden;
+}
+
+.donation-modal .modal-body {
+    overflow-y: auto;
+    max-height: calc(90vh - 120px);
+}
+
+.modal-header {
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+}
+
+.modal-logo img {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.modal-icon {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Form Styles */
+.compact-form .form-control,
+.compact-form .form-select,
+.compact-form .input-group-text {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+}
+
+.compact-form .form-floating label {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+}
+
+.compact-form .form-floating > .form-control,
+.compact-form .form-floating > .form-select {
+    height: calc(2.5rem + 2px);
+    line-height: 1.25;
+}
+
+.compact-form .form-floating > textarea.form-control {
+    height: 60px;
+}
+
+.compact-form .form-floating > .form-control:focus ~ label,
+.compact-form .form-floating > .form-control:not(:placeholder-shown) ~ label,
+.compact-form .form-floating > .form-select ~ label {
+    transform: scale(.85) translateY(-0.5rem) translateX(0.15rem);
+}
+
+.compact-form .form-select option {
+    color: #212529;
+}
+
+.compact-form .form-select option:first-child {
+    color: #6c757d;
+}
+
+.compact-form .form-floating > .form-select {
+    height: calc(3rem + 2px);
+    padding-top: 1.25rem;
+    padding-bottom: 0.25rem;
+    line-height: 1.2;
+}
+
+.compact-form .form-floating > .form-select ~ label {
+    opacity: 0.65;
+    transform: scale(.85) translateY(-0.5rem) translateX(0.15rem);
+    height: auto;
+    padding: 0.5rem 0.75rem;
+}
+
+.compact-form .form-select {
+    padding-right: 2rem !important;
+}
+
+.compact-form .form-select option {
+    padding: 0.5rem;
+    color: #212529;
+}
+
+/* QR Code Styles */
+.pix-qrcode-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.pix-qrcode-container img {
+    width: 100%;
+    max-width: 250px;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.pix-code-container {
+    width: 100%;
+    max-width: 500px;
+    position: relative;
+}
+
+.pix-code-container textarea {
+    width: 100%;
+    height: 100px;
+    padding: 1rem 3rem 1rem 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    resize: none;
+    overflow: hidden;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    font-family: monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s ease;
+}
+
+.pix-code-container textarea:focus {
+    outline: none;
+    border-color: #4CAF50;
+}
+
+.copy-btn {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #4CAF50;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.copy-btn:hover {
+    color: #45a049;
+}
+
+.copy-btn.copied {
+    color: #2196F3;
+}
+
+/* Animation Styles */
+@keyframes scaleUp {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes checkmarkAnimation {
+    0% {
+        stroke-dashoffset: 50;
+        stroke-dasharray: 50;
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        stroke-dashoffset: 0;
+        stroke-dasharray: 50;
+    }
+}
+
+.success-animation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: scaleUp 0.5s ease-in-out;
+}
+
+.success-animation i {
+    animation: scaleUp 0.5s ease-in-out;
+    color: #28a745;
+    transform-origin: center;
+}
+
+#modal-body-approved {
+    animation: scaleUp 0.5s ease-in-out;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    body {
+        padding-top: 55px;
+    }
+
+    .fixed-header {
+        padding: 8px 0;
+    }
+
+    .header-logo {
+        margin-right: 1rem;
+    }
+
+    .header-stats {
+        gap: 0.5rem;
+    }
+
+    .project-info {
+        margin-right: 0.75rem;
+    }
+
+    .project-supporters {
+        padding-right: 0.5rem;
+    }
+
+    .project-supporters:after,
+    .stat-item:after {
+        display: none !important;
+    }
+
+    .stat-item {
+        padding: 0 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.625rem;
+        margin-bottom: 1px;
+        text-transform: none;
+    }
+
+    .stat-value {
+        font-size: 0.75rem;
+    }
+
+    .project-name {
+        font-size: 0.75rem;
+        max-width: 100px;
+        padding-right: 1.5rem;
+    }
+
+    .progress-stat, .meta-stat {
+        display: none !important;
+    }
+
+    .header-logo img {
+        height: 28px;
+    }
+
+    .avatar-wrapper {
+        width: 40px;
+        height: 40px;
+    }
+
+    .donation-amount .badge {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.6rem;
+    }
+
+    .sticky-ranking {
+        position: relative;
+        top: 0;
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .modal-dialog {
+        margin: 1rem;
+    }
+    .donation-modal {
+        max-height: calc(100vh - 2rem);
+    }
+}
+
+@media (min-width: 992px) {
+    .container-fluid {
+        padding-right: 1rem !important;
+    }
+}
