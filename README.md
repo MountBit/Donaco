@@ -39,12 +39,14 @@ Sistema de doações foi feito com base inicial no QRCode-PIX-MercadoPago-php
 ### Página Principal
 Uma interface acolhedora e otimizada para incentivar doações.
 
-![Página Principal](./assets/main-page.png)
+![Página Principal](https://github.com/user-attachments/assets/e0f6e342-24a3-47e8-acf6-fefb5046bf20)
+
 
 ### Dashboard Administrativo
 Controle total dos seus projetos e doações.
 
-![Dashboard](./assets/admin-dashboard.png)
+![Dashboard](https://github.com/user-attachments/assets/cf3b7657-29e1-4ffb-971a-dcae324976e7)
+
 
 ---
 
