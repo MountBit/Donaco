@@ -71,7 +71,7 @@ Toda doação é um agradecimento que fortalece nossa comunidade. Contribua com 
 
 - **Backend**: Laravel 11
 - **Frontend**: ViteJS + TailwindCSS
-- **Banco de Dados**: MySQL ou MariaDB
+- **Banco de Dados**: MySQL ou MariaDB ou SQLite
 - **Outros**: Redis (opcional, para cache e notificações)
 
 ---
