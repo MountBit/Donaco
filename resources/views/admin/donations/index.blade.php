@@ -64,12 +64,11 @@
                                                                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 pointer-events-none">
                                                                             +55
                                                                         </span>
-                                                                        <input type="text" 
-                                                                            name="donorPhone" 
-                                                                            id="donorPhone" 
+                                                                        <input type="text"
+                                                                            name="donorPhone"
+                                                                            id="donorPhone"
                                                                             class="pl-12 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                                                                            maxlength="15"
-                                                                        >
+                                                                            maxlength="15">
                                                                     </div>
                                                                 </div>
                                                                 <div class="mb-4">
@@ -94,7 +93,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="mt-5 sm:mt-6">
-                                                                    <button type="button" 
+                                                                    <button type="button"
                                                                         @click="submitDonation"
                                                                         class="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm">
                                                                         Confirmar Doação
@@ -110,7 +109,7 @@
                                 </div>
 
                                 <!-- Barra de Pesquisa -->
-                                <div class="w-full sm:w-auto flex-1 sm:max-w-md" 
+                                <div class="w-full sm:w-auto flex-1 sm:max-w-md"
                                     x-data="{ 
                                         search: '{{ $searchTerm }}',
                                         timeout: null,
@@ -121,16 +120,15 @@
                                         }
                                     }">
                                     <div class="relative">
-                                        <input type="text" 
+                                        <input type="text"
                                             x-model="search"
                                             @input="clearTimeout(timeout); timeout = setTimeout(() => performSearch(), 800)"
                                             @keydown.enter="performSearch()"
                                             class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg leading-5 bg-white dark:bg-gray-800 dark:border-gray-700 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm shadow-sm"
-                                            placeholder="Pesquisar doações (mínimo 3 caracteres)..."
-                                        >
+                                            placeholder="Pesquisar doações (mínimo 3 caracteres)...">
                                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                             </svg>
                                         </div>
                                     </div>
@@ -139,17 +137,17 @@
 
                             <!-- Filtros de Status -->
                             <div class="mt-4 flex flex-wrap gap-2">
-                                <a href="{{ route('donations.index', ['search' => request('search')]) }}" 
+                                <a href="{{ route('donations.index', ['search' => request('search')]) }}"
                                     class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium {{ !$currentStatus ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200' : 'text-gray-600 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600' }}">
                                     Todas
                                     <span class="ml-2 px-2 py-0.5 text-xs rounded-full bg-white dark:bg-gray-800">{{ $counts['all'] }}</span>
                                 </a>
-                                <a href="{{ route('donations.index', ['status' => 'pending', 'search' => request('search')]) }}" 
+                                <a href="{{ route('donations.index', ['status' => 'pending', 'search' => request('search')]) }}"
                                     class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium {{ $currentStatus === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' : 'text-gray-600 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600' }}">
                                     Pendentes
                                     <span class="ml-2 px-2 py-0.5 text-xs rounded-full bg-white dark:bg-gray-800">{{ $counts['pending'] }}</span>
                                 </a>
-                                <a href="{{ route('donations.index', ['status' => 'approved', 'search' => request('search')]) }}" 
+                                <a href="{{ route('donations.index', ['status' => 'approved', 'search' => request('search')]) }}"
                                     class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium {{ $currentStatus === 'approved' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'text-gray-600 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600' }}">
                                     Confirmadas
                                     <span class="ml-2 px-2 py-0.5 text-xs rounded-full bg-white dark:bg-gray-800">{{ $counts['approved'] }}</span>
@@ -158,107 +156,112 @@
                         </div>
 
                         @if($donations->isEmpty())
-                            <div class="text-center py-12">
-                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-                                </svg>
-                                <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-200">Nenhuma doação encontrada</h3>
-                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                    {{ request('search') ? 'Tente buscar com outros termos.' : 'Comece criando uma nova doação.' }}
-                                </p>
-                            </div>
+                        <div class="text-center py-12">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-200">Nenhuma doação encontrada</h3>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                {{ request('search') ? 'Tente buscar com outros termos.' : 'Comece criando uma nova doação.' }}
+                            </p>
+                        </div>
                         @else
-                            <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-                                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                        <tr>
-                                            <th scope="col" class="p-4">
-                                                <span class="sr-only">Avatar</span>
-                                            </th>
-                                            <th scope="col" class="px-4 py-3">
-                                                Doador
-                                            </th>
-                                            <th scope="col" class="px-4 py-3">
-                                                Valor
-                                            </th>
-                                            <th scope="col" class="px-4 py-3">
-                                                Status
-                                            </th>
-                                            <th scope="col" class="px-4 py-3">
-                                                Data
-                                            </th>
-                                            <th scope="col" class="px-4 py-3">
-                                                <span class="sr-only">Ações</span>
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($donations as $donation)
-                                            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
-                                                <td class="w-4 p-4">
-                                                    <div class="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
-                                                        <span class="text-indigo-700 dark:text-indigo-300 font-medium text-sm">
-                                                            {{ strtoupper(substr($donation->nickname, 0, 2)) }}
-                                                        </span>
-                                                    </div>
-                                                </td>
-                                                <td class="px-4 py-3">
-                                                    <div>
-                                                        <div class="font-semibold text-gray-900 dark:text-white">
-                                                            {{ $donation->nickname }}
-                                                        </div>
-                                                        <div class="text-xs text-gray-500 dark:text-gray-400">
-                                                            {{ $donation->email }}
-                                                        </div>
-                                                        @if($donation->phone)
-                                                            <div class="text-xs text-gray-500 dark:text-gray-400">
-                                                                {{ $donation->phone }}
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                </td>
-                                                <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                                                    R$ {{ number_format($donation->value, 2, ',', '.') }}
-                                                </td>
-                                                <td class="px-4 py-3">
-                                                    <span class="px-2.5 py-1 inline-flex text-xs font-medium rounded-full 
+                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                    <tr>
+                                        <th scope="col" class="p-4">
+                                            <span class="sr-only">Avatar</span>
+                                        </th>
+                                        <th scope="col" class="px-4 py-3">
+                                            Doador
+                                        </th>
+                                        <th scope="col" class="px-4 py-3">
+                                            Valor
+                                        </th>
+                                        <th scope="col" class="px-4 py-3">
+                                            Status
+                                        </th>
+                                        <th scope="col" class="px-4 py-3">
+                                            Data
+                                        </th>
+                                        <th scope="col" class="px-4 py-3">
+                                            <span class="sr-only">Ações</span>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($donations as $donation)
+                                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                        <td class="w-4 p-4">
+                                            <div class="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
+                                                <span class="text-indigo-700 dark:text-indigo-300 font-medium text-sm">
+                                                    {{ strtoupper(substr($donation->nickname, 0, 2)) }}
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <div>
+                                                <div class="font-semibold text-gray-900 dark:text-white">
+                                                    {{ $donation->nickname }}
+                                                </div>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400">
+                                                    {{ $donation->email }}
+                                                </div>
+                                                @if($donation->phone)
+                                                <div class="text-xs text-gray-500 dark:text-gray-400">
+                                                    {{ $donation->phone }}
+                                                </div>
+                                                @endif
+                                            </div>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                                            R$ {{ number_format($donation->value, 2, ',', '.') }}
+                                        </td>
+                                        <td class="px-4 py-3">
+                                            <span class="px-2.5 py-1 inline-flex text-xs font-medium rounded-full 
                                                         {{ $donation->status === 'approved' 
                                                             ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
                                                             : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' }}">
-                                                        {{ $donation->status === 'approved' ? 'Confirmada' : 'Pendente' }}
-                                                    </span>
-                                                </td>
-                                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                                    {{ $donation->created_at->format('d/m/Y H:i') }}
-                                                </td>
-                                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                    <div class="flex items-center justify-end space-x-2">
-                                                        <a href="{{ route('donations.show', $donation) }}" 
-                                                           class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                                            </svg>
-                                                            {{ __('Visualizar') }}
-                                                        </a>
-                                                        <a href="{{ route('donations.edit', $donation) }}" 
-                                                           class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-600 transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                                            </svg>
-                                                            {{ __('Editar') }}
-                                                        </a>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                            <div class="mt-4">
-                                {{ $donations->appends(request()->query())->links() }}
-                            </div>
+                                                {{ $donation->status === 'approved' ? 'Confirmada' : 'Pendente' }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            @if ($donation->created_at)
+                                            {{ $donation->created_at->format('d/m/Y H:i') }}
+                                            @else
+                                            Data não disponível
+                                            @endif
+
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <div class="flex items-center justify-end space-x-2">
+                                                <a href="{{ route('donations.show', $donation) }}"
+                                                    class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                    </svg>
+                                                    {{ __('Visualizar') }}
+                                                </a>
+                                                <a href="{{ route('donations.edit', $donation) }}"
+                                                    class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-600 transition-all duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                    </svg>
+                                                    {{ __('Editar') }}
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="mt-4">
+                            {{ $donations->appends(request()->query())->links() }}
+                        </div>
                         @endif
 
                         <!-- Modal de Aprovação -->
@@ -300,7 +303,7 @@
                                 <div class="mt-3 text-center">
                                     <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
                                         <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                         </svg>
                                     </div>
                                     <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 mt-4" id="modalTitle"></h3>
@@ -341,12 +344,12 @@
         const phoneInput = document.getElementById('donorPhone');
         phoneInput.addEventListener('input', function(e) {
             let value = e.target.value.replace(/\D/g, '');
-            
+
             // Limita o tamanho para 11 dígitos (DDD + número)
             if (value.length > 11) {
                 value = value.slice(0, 11);
             }
-            
+
             // Aplica a máscara para visualização
             if (value.length <= 2) {
                 if (value.length > 0) {
@@ -359,7 +362,7 @@
             } else {
                 value = '(' + value.slice(0, 2) + ') ' + value.slice(2, 7) + '-' + value.slice(7);
             }
-            
+
             e.target.value = value;
         });
 
@@ -373,10 +376,10 @@
         window.submitDonation = function() {
             const form = document.getElementById('donationForm');
             const formData = new FormData(form);
-            
+
             // Substitui o valor do telefone pelo formato correto (com DDI, sem máscara)
             formData.set('donorPhone', getFormattedPhoneForDB());
-            
+
             const paymentType = formData.get('paymentType');
 
             if (paymentType === 'cash') {
@@ -416,12 +419,12 @@
         const modal = document.getElementById('deleteModal');
         const title = document.getElementById('modalTitle');
         const message = document.getElementById('modalMessage');
-        
+
         title.textContent = 'Confirmar Exclusão da Doação';
         message.textContent = `Tem certeza que deseja excluir a doação de R$ ${donationValue} feita por "${donationNickname}"? Esta ação não pode ser desfeita.`;
-        
+
         modal.classList.remove('hidden');
-        
+
         const deleteButton = document.getElementById('deleteButton');
         deleteButton.onclick = function() {
             document.getElementById(`delete-form-${donationId}`).submit();
