@@ -8,11 +8,18 @@ use App\Models\Donation;
 use App\Services\MercadoPagoService;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\RateLimiter;
 
 class PaymentNotificationController extends Controller
 {
     public function checkPaymentStatus($external_reference)
     {
+        if (RateLimiter::tooManyAttempts('payment-check:'.$external_reference, 10)) {
+            return response()->json(['error' => 'Too many attempts'], 429);
+        }
+        
+        RateLimiter::hit('payment-check:'.$external_reference);
+        
         $response = $this->handleNotification($external_reference);
         $verify_payment = json_decode(json_encode($response->getData()), true);
 

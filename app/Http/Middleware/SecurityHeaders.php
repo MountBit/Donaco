@@ -17,8 +17,17 @@ class SecurityHeaders
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         $response->headers->set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
         
-        // Configuração básica do Content Security Policy
-        $response->headers->set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';");
+        // CSP mais restritivo
+        $csp = "default-src 'self'; " .
+               "script-src 'self' 'nonce-" . csrf_token() . "'; " .
+               "style-src 'self' 'unsafe-inline'; " .
+               "img-src 'self' data: https:; " .
+               "font-src 'self'; " .
+               "connect-src 'self'; " .
+               "frame-ancestors 'none'; " .
+               "form-action 'self';";
+        
+        $response->headers->set('Content-Security-Policy', $csp);
 
         return $response;
     }

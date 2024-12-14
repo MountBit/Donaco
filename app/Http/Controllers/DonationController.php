@@ -124,9 +124,9 @@ class DonationController extends Controller
         // Salvar a doação no banco
         $donation = $this->donationRepository->create([
             'project_id'         => $validated['project_id'],
-            'nickname'           => $validated['nickname'],
+            'nickname'           => htmlspecialchars($validated['nickname']),
             'email'              => $validated['email'],
-            'message'            => $validated['message'] ?? null,
+            'message'            => $validated['message'] ? htmlspecialchars($validated['message']) : null,
             'value'              => $value,
             'external_reference' => $externalReference,
             'status'             => 'pending',

@@ -21,13 +21,12 @@ class DonationRequest extends FormRequest
      */
     public function rules(): array
     {
-
         return [
             'project_id' => 'required|exists:projects,id',
-            'nickname'   => 'required|string|min:2|max:255',
-            'email'      => 'required|email',
-            'value'      => 'required|min:0.01',
-            'message'    => 'nullable|string|max:500',
+            'nickname'   => ['required', 'string', 'min:2', 'max:255', 'regex:/^[\p{L}\s\-0-9]+$/u'],
+            'email'      => 'required|email:rfc,dns',
+            'value'      => ['required', 'numeric', 'min:0.01', 'max:999999.99'],
+            'message'    => ['nullable', 'string', 'max:500', 'regex:/^[\p{L}\s\-0-9.,!?]+$/u'],
         ];
     }
 
