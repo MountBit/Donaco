@@ -7,6 +7,7 @@ use App\Models\Donation;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class DonationController extends Controller
 {
@@ -16,36 +17,34 @@ class DonationController extends Controller
     {
         $query = Donation::query();
 
-        // Aplicar filtro de status se fornecido
-        if ($request->filled('status') && in_array($request->status, ['pending', 'approved'])) {
+        // Aplicar filtro de status
+        if ($request->has('status')) {
             $query->where('status', $request->status);
         }
 
-        // Aplicar termo de pesquisa se fornecido com proteção contra SQL injection
-        if ($request->filled('search')) {
-            $searchTerm = $request->search;
-            $query->where(function($q) use ($searchTerm) {
-                $q->where('nickname', 'like', "%{$searchTerm}%")
-                  ->orWhere('email', 'like', "%{$searchTerm}%")
-                  ->orWhere('phone', 'like', "%{$searchTerm}%");
+        // Aplicar pesquisa
+        if ($request->has('search') && strlen($request->search) >= 3) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nickname', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('external_reference', 'like', "%{$search}%");
             });
         }
 
-        $donations = $query->latest()->paginate(10);
-        
-        // Contagem por status para os badges usando queries seguras
+        // Contagens para os filtros
         $counts = [
             'all' => Donation::count(),
             'pending' => Donation::where('status', 'pending')->count(),
             'approved' => Donation::where('status', 'approved')->count(),
         ];
 
-        return view('admin.donations.index', [
-            'donations' => $donations,
-            'counts' => $counts,
-            'currentStatus' => $request->status,
-            'searchTerm' => $request->search
-        ]);
+        // Carregar projetos para o modal de nova doação
+        $projects = Project::all();
+
+        $donations = $query->latest()->paginate(10);
+
+        return view('admin.donations.index', compact('donations', 'counts', 'projects'));
     }
 
     public function create(){
@@ -61,7 +60,7 @@ class DonationController extends Controller
     public function update(Request $request, Donation $donation)
     {
         $validated = $request->validate([
-            'status' => 'sometimes|required|in:pending,approved',
+            'status' => 'sometimes|required|in:pending,approved,rejected',
             'external_reference' => 'sometimes|required|string',
             'nickname' => 'sometimes|required|string',
             'email' => 'sometimes|required|email',
@@ -76,24 +75,90 @@ class DonationController extends Controller
         $donation->update($validated);
 
         if ($request->has('status')) {
-            $message = $validated['status'] === 'approved' 
-                ? 'Doação aprovada com sucesso!' 
-                : 'Status da doação atualizado com sucesso!';
+            $message = match($validated['status']) {
+                'approved' => 'Doação aprovada com sucesso!',
+                'rejected' => 'Doação rejeitada com sucesso!',
+                default => 'Status da doação atualizado com sucesso!'
+            };
             
             return redirect()->back()->with('success', $message);
         }
 
-        return redirect()->route('donations.index')->with('success', 'Doação atualizada com sucesso!');
+        return redirect()->route('admin.donations.index')->with('success', 'Doação atualizada com sucesso!');
     }
 
     public function destroy(Donation $donation)
     {
         $donation->delete();
-        return redirect()->route('donations.index')->with('success', 'Doação excluída com sucesso.');
+        return redirect()->route('admin.donations.index')->with('success', 'Doação excluída com sucesso.');
     }
 
     public function show(Donation $donation)
     {
-        return view('admin.donations.show', compact('donation'));
+        // Verificar se existe arquivo de comprovante
+        $proofFileUrl = null;
+        $proofFileExists = false;
+
+        try {
+            if (!empty($donation->proof_file)) {
+                if (Storage::disk('public')->exists($donation->proof_file)) {
+                    $proofFileUrl = Storage::url($donation->proof_file);
+                    $proofFileExists = true;
+                    \Log::info('Arquivo encontrado: ' . $proofFileUrl);
+                } else {
+                    \Log::warning('Arquivo não encontrado no storage: ' . $donation->proof_file);
+                }
+            } else {
+                \Log::info('Doação sem arquivo de comprovante (proof_file é null)');
+            }
+        } catch (\Exception $e) {
+            \Log::error('Erro ao verificar arquivo: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+        }
+
+        return view('admin.donations.show', [
+            'donation' => $donation,
+            'proofFileUrl' => $proofFileUrl,
+            'proofFileExists' => $proofFileExists
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'project_id' => 'required|exists:projects,id',
+            'nickname' => 'required|string|min:2|max:255',
+            'email' => 'required|email',
+            'value' => 'required',
+            'message' => 'nullable|string|max:1000',
+        ]);
+
+        // Converter valor para formato correto
+        $value = str_replace(['.', ','], ['', '.'], $validated['value']);
+        $value = (float) $value;
+
+        try {
+            $donation = Donation::create([
+                'project_id' => $validated['project_id'],
+                'nickname' => $validated['nickname'],
+                'email' => $validated['email'],
+                'message' => $validated['message'],
+                'value' => $value,
+                'status' => 'pending',
+                'payment_method' => 'manual',
+                'external_reference' => bin2hex(random_bytes(16))
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Doação criada com sucesso!',
+                'donation' => $donation
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Erro ao criar doação: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

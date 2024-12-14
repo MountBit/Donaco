@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
-    var ctx = document.getElementById('projectsChart').getContext('2d');
-    var projectsChart = new Chart(ctx, {
+    const ctx = document.getElementById('projectsChart').getContext('2d');
+    
+    new Chart(ctx, {
         type: 'doughnut',
         data: {
             labels: chartData.labels,
@@ -25,9 +26,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 legend: {
                     position: 'bottom',
                     labels: {
+                        color: document.documentElement.classList.contains('dark') ? '#fff' : '#000',
                         padding: 20,
                         font: {
                             size: 12
+                        }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            let value = context.raw || 0;
+                            return label + 'R$ ' + parseFloat(value).toLocaleString('pt-BR', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            });
                         }
                     }
                 }

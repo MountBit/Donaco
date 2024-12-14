@@ -209,7 +209,40 @@
 
                 <!-- Existing modal body content -->
                 <div id="modal-body-payer" class="modal-body p-4">
-                    <form id="donationForm" class="needs-validation" method="POST" novalidate>
+                    <div class="payment-method-selector mb-4">
+                        <h6 class="mb-3">Escolha a forma de pagamento:</h6>
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="payment-option" data-method="mercadopago">
+                                    <input type="radio" 
+                                           name="payment_method" 
+                                           id="mercadopago" 
+                                           value="mercadopago" 
+                                           checked 
+                                           required>
+                                    <label for="mercadopago" class="d-flex flex-column align-items-center">
+                                        <img src="{{ asset('assets/images/mp-logo.png') }}" alt="Mercado Pago" height="40">
+                                        <span class="mt-2">Mercado Pago</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="payment-option" data-method="manual">
+                                    <input type="radio" 
+                                           name="payment_method" 
+                                           id="manual" 
+                                           value="manual" 
+                                           required>
+                                    <label for="manual" class="d-flex flex-column align-items-center">
+                                        <i class="fas fa-qrcode fa-2x"></i>
+                                        <span class="mt-2">PIX Manual</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form id="donationForm" class="needs-validation" method="POST" enctype="multipart/form-data" novalidate>
                         @csrf
                         <div id="alert-donation" class="alert alert-danger text-center d-none" role="alert"></div>
 
@@ -221,12 +254,15 @@
 
                             <div class="form-floating mb-2">
                                 <select name="project_id" id="project_id" class="form-select" required>
-                                    <option value="" selected disabled>Selecione um projeto</option>
+                                    <option value="">Selecione um projeto</option>
                                     @foreach ($projects as $project)
-                                    <option value="{{ $project->id }}">{{ $project->name }}</option>
+                                        <option value="{{ $project->id }}">{{ $project->name }}</option>
                                     @endforeach
                                 </select>
                                 <label for="project_id">Projeto</label>
+                                <div class="invalid-feedback">
+                                    Por favor, selecione um projeto.
+                                </div>
                             </div>
 
                             <div class="form-floating mb-2">
@@ -257,14 +293,45 @@
                                 </div>
                             </div>
 
+                            <div id="manual-payment-info" class="d-none mb-3">
+                                <div class="pix-info-box p-3 bg-light rounded mb-3">
+                                    <h6 class="mb-2">Dados para transferência PIX</h6>
+                                    <p class="mb-1"><strong>Chave PIX:</strong> {{ env('PIX_KEY') }}</p>
+                                    <p class="mb-1"><strong>Banco:</strong> {{ env('PIX_BANK') }}</p>
+                                    <p class="mb-0"><strong>Beneficiário:</strong> {{ env('PIX_BENEFICIARY') }}</p>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Comprovante de Pagamento</label>
+                                    <input type="file" 
+                                        class="form-control" 
+                                        name="proof_file" 
+                                        id="proof_file" 
+                                        accept=".pdf,.png,.jpg,.jpeg"
+                                        data-required-if-manual="true">
+                                    <div class="invalid-feedback">
+                                        Por favor, envie um comprovante de pagamento.
+                                    </div>
+                                    <div class="form-text">Aceitos: PDF, PNG, JPG (máx. 2MB)</div>
+                                </div>
+                            </div>
+
                             <div class="d-grid gap-2">
                                 <button type="submit" class="btn btn-warning text-white fw-bold py-2">
                                     Continuar
                                 </button>
-                                <div class="text-center">
-                                    <div class="d-flex align-items-center justify-content-center small text-muted">
-                                        <img src="{{ asset('assets/images/mp-logo.png') }}" width="20" alt="Mercado Pago" class="me-1" />
-                                        Pagamento via PIX com Mercado Pago
+                                <div class="text-center payment-method-info">
+                                    <div class="mercadopago-info">
+                                        <div class="d-flex align-items-center justify-content-center small text-muted">
+                                            <img src="{{ asset('assets/images/mp-logo.png') }}" width="20" alt="Mercado Pago" class="me-1" />
+                                            Pagamento via PIX com Mercado Pago
+                                        </div>
+                                    </div>
+                                    <div class="manual-info d-none">
+                                        <div class="d-flex align-items-center justify-content-center small text-muted">
+                                            <i class="fas fa-qrcode me-1"></i>
+                                            Pagamento via PIX Manual
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -272,40 +339,33 @@
                     </form>
                 </div>
 
-                <!-- Body - Realização da doação via PIX -->
-                <div id="modal-body-payment" class="modal-body p-3 d-none">
-                    <div id="loading" class="text-center my-3">
-                        <div class="spinner-border text-warning" style="width: 2.5rem; height: 2.5rem;" role="status"></div>
-                    </div>
-
-                    <div class="pix-qrcode-container">
-                        <img id="image-qrcode-pix" src="" alt="QR Code PIX" style="display: none;">
-
+                <!-- No modal-body-payment -->
+                <div id="modal-body-payment" class="modal-body p-4 d-none">
+                    <div class="text-center mb-4">
+                        <h5 class="mb-3">Pagamento via PIX</h5>
+                        <p class="text-muted mb-4">Escaneie o QR Code abaixo ou copie o código PIX</p>
+                        
+                        <div class="qr-code-container mb-4">
+                            <img id="image-qrcode-pix" src="" alt="QR Code PIX" style="display: none; max-width: 200px; margin: 0 auto;">
+                        </div>
+                        
                         <div class="pix-code-container">
-                            <textarea
-                                id="code-pix"
-                                class="form-control"
-                                readonly
-                                placeholder="Código PIX será exibido aqui"></textarea>
-                            <button
-                                id="copyButton"
-                                class="copy-btn"
-                                title="Copiar código PIX">
-                                <i class="fas fa-copy"></i>
-                            </button>
+                            <div class="form-group">
+                                <label for="code-pix" class="form-label">Código PIX</label>
+                                <div class="input-group">
+                                    <textarea id="code-pix" class="form-control" rows="3" readonly></textarea>
+                                    <button class="btn btn-outline-secondary position-relative" type="button" id="copyButton" title="Copiar código PIX">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Body - Pagamento Aprovado -->
-                <div id="modal-body-approved" class="modal-body p-3 d-none">
-                    <div class="text-center">
-                        <div class="success-animation mb-3">
-                            <i class="fas fa-check-circle text-success fa-3x"></i>
-                        </div>
-                        <h5 class="mb-3">Doação Realizada!</h5>
-                        <p class="mb-0 text-muted">Sua contribuição foi processada com sucesso. Obrigado por apoiar o projeto!</p>
-                    </div>
+                <!-- Modal de aprovação -->
+                <div id="modal-body-approved" class="modal-body p-4 d-none">
+                    <!-- Será preenchido dinamicamente -->
                 </div>
             </div>
         </div>
@@ -371,10 +431,15 @@
         </div>
     </footer>
 
-    <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script>
         const donationStoreUrl = "{{ route('donations.stored') }}";
         const donationStatusRoute = "{{ route('donations.status', ':externalReference') }}";
+        const paymentCheckConfig = {
+            interval: {{ config('app.payment_check_interval', 5000) }},
+            maxTime: {{ config('app.payment_check_max_time', 300000) }}
+        };
     </script>
     <script src="{{ asset('assets/js/donations.js') }}"></script>
 </body>

@@ -8,7 +8,19 @@ class DonationRepository
 {
     public function create(array $data)
     {
-        return Donation::create($data);
+        \Log::info('DonationRepository: Criando doação com dados:', $data);
+        
+        try {
+            $donation = Donation::create($data);
+            \Log::info('DonationRepository: Doação criada:', $donation->toArray());
+            return $donation;
+        } catch (\Exception $e) {
+            \Log::error('DonationRepository: Erro ao criar doação:', [
+                'error' => $e->getMessage(),
+                'data' => $data
+            ]);
+            throw $e;
+        }
     }
 
     public function findByExternalReference($reference)

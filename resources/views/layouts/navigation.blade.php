@@ -11,15 +11,15 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                <div class="hidden space-x-8 sm:-my-px sm:ml-16 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('navigation.top.menu.dashboard') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('admin.donations.index')" :active="request()->routeIs('admin.donations.*')">
+                        {{ __('navigation.top.menu.donations') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('projects.index')" :active="request()->routeIs('projects.*')">
                         {{ __('navigation.top.menu.projects') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('donations.index')" :active="request()->routeIs('donations.*')">
-                        {{ __('navigation.top.menu.donations') }}
                     </x-nav-link>
                 </div>
             </div>
@@ -73,8 +73,19 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
+            <!-- Dashboard -->
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('navigation.top.menu.dashboard') }}
+            </x-responsive-nav-link>
+
+            <!-- Doações -->
+            <x-responsive-nav-link :href="route('admin.donations.index')" :active="request()->routeIs('admin.donations.*')">
+                {{ __('navigation.top.menu.donations') }}
+            </x-responsive-nav-link>
+
+            <!-- Projetos -->
+            <x-responsive-nav-link :href="route('projects.index')" :active="request()->routeIs('projects.*')">
+                {{ __('navigation.top.menu.projects') }}
             </x-responsive-nav-link>
         </div>
 
@@ -93,10 +104,9 @@
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-
                     <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();">
+                        onclick="event.preventDefault();
+                            this.closest('form').submit();">
                         {{ __('navigation.top.menu.log_out') }}
                     </x-responsive-nav-link>
                 </form>

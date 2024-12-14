@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('dashboards.dashboard') }}
+            {{ __('Dashboard') }}
         </h2>
     </x-slot>
 
@@ -164,20 +164,30 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <!-- Chart Section -->
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Distribuição de Doações por Projeto</h3>
-                    <div class="relative" style="height: 400px;">
-                        <canvas id="projectsChart"></canvas>
+                    <div class="text-center mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                            Valor Total por Projeto
+                        </h3>
                     </div>
+                    @if(count($chartData['labels']) > 0)
+                        <div class="relative" style="height: 300px; margin-top: 1.5rem;">
+                            <canvas id="projectsChart"></canvas>
+                        </div>
+                    @else
+                        <p class="text-gray-500 dark:text-gray-400 text-center py-4">
+                            Nenhuma doação aprovada para exibir no gráfico
+                        </p>
+                    @endif
                 </div>
 
                 <!-- Recent Donations -->
                 <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Doações Recentes</h3>
-                        <a href="{{ route('donations.index') }}" class="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300">Ver todas</a>
+                        <a href="{{ route('admin.donations.index') }}" class="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300">Ver todas</a>
                     </div>
                     <div class="space-y-4">
-                        @forelse($recentDonations ?? [] as $donation)
+                        @forelse($recentDonations as $donation)
                             <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                                 <div class="flex items-center">
                                     <div class="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
@@ -204,12 +214,14 @@
         </div>
     </div>
 
-    <script src="{{ asset('assets/js/chart.js') }}"></script>
-    <script>
-        var chartData = {
-            labels: {!! json_encode($chartData['labels']) !!},
-            data: {!! json_encode($chartData['data']) !!}
-        };
-    </script>
-    <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @push('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            const chartData = {
+                labels: @json($chartData['labels']),
+                data: @json($chartData['data'])
+            };
+        </script>
+        <script src="{{ asset('assets/js/dashboard.js') }}"></script>
+    @endpush
 </x-app-layout>
