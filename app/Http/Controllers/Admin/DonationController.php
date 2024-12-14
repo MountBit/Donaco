@@ -25,14 +25,9 @@ class DonationController extends Controller
         if ($request->filled('search')) {
             $searchTerm = $request->search;
             $query->where(function($q) use ($searchTerm) {
-                $q->where('nickname', 'like', DB::raw('?'))
-                  ->orWhere('email', 'like', DB::raw('?'))
-                  ->orWhere('phone', 'like', DB::raw('?'))
-                  ->setBindings([
-                      "%{$searchTerm}%",
-                      "%{$searchTerm}%",
-                      "%{$searchTerm}%"
-                  ]);
+                $q->where('nickname', 'like', "%{$searchTerm}%")
+                  ->orWhere('email', 'like', "%{$searchTerm}%")
+                  ->orWhere('phone', 'like', "%{$searchTerm}%");
             });
         }
 

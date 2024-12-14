@@ -57,9 +57,9 @@ class LoginRequest extends FormRequest
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function ensureIsNotRateLimited(): void
+    protected function ensureIsNotRateLimited(): void
     {
-        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
+        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 3)) {
             return;
         }
 
@@ -81,5 +81,14 @@ class LoginRequest extends FormRequest
     public function throttleKey(): string
     {
         return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+    }
+
+    /**
+     * Get the decay minutes for the rate limiter.
+     */
+    protected function getDecayMinutes(): int
+    {
+        $attempts = RateLimiter::attempts($this->throttleKey());
+        return min(pow(2, $attempts), 60);
     }
 }
