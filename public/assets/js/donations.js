@@ -40,6 +40,48 @@ style.textContent = `
     background-color: #157347;
     border-color: #157347;
 }
+
+/* Estilização da barra de rolagem para o modal */
+.modal-body {
+    scrollbar-width: thin; /* Para Firefox */
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent; /* Para Firefox */
+}
+
+.modal-body::-webkit-scrollbar {
+    width: 6px; /* Largura da barra de rolagem */
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: transparent; /* Fundo da trilha */
+    border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2); /* Cor da barra */
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.3); /* Cor da barra ao passar o mouse */
+}
+
+/* Garantir que o modal tenha altura máxima adequada */
+.modal-dialog {
+    max-height: 90vh;
+    margin: 1.75rem auto;
+}
+
+.modal-content {
+    max-height: calc(90vh - 3.5rem);
+}
+
+.modal-body {
+    max-height: calc(90vh - 12rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
 `;
 document.head.appendChild(style);
 
