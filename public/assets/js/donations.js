@@ -97,7 +97,7 @@ function initProjectStatsCarousel() {
         projects[currentIndex].classList.remove('active');
         currentIndex = (currentIndex + 1) % projects.length;
         projects[currentIndex].classList.add('active');
-    }, 5000);
+    }, 8000);
 }
 
 // Money Mask

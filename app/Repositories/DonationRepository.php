@@ -38,7 +38,8 @@ class DonationRepository
 
     public function getRecentApprovedDonations()
     {
-        return Donation::where('status', 'approved')
+        return Donation::with('project')
+            ->where('status', 'approved')
             ->orderBy('created_at', 'desc')
             ->get();
     }

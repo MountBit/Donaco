@@ -59,10 +59,16 @@ class DonationController extends Controller
         // Calcula totais por projeto
         $projectTotals = [];
         foreach ($projects as $project) {
+            // Pegar todas as doações aprovadas do projeto
             $projectDonations = $recentDonations->where('project_id', $project->id);
+            
+            // Calcular o total de doações
             $totalAmount = $projectDonations->sum('value');
-            $totalDonors = $projectDonations->unique('nickname')->count();
-            $goal = $project->goal ?? 80000.00; // Valor padrão caso não tenha meta definida
+            
+            // Contar todos os doadores (não apenas únicos)
+            $totalDonors = $projectDonations->count();
+            
+            $goal = $project->goal ?? 80000.00;
             $progress = ($totalAmount / $goal) * 100;
 
             $projectTotals[$project->id] = [

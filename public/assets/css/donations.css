@@ -105,18 +105,20 @@ body {
 
 .project-stats {
     display: none;
-    animation: fadeInOut 1s ease-in-out;
+    animation: fadeInOut 1.5s ease-in-out;
+    opacity: 0;
 }
 
 .project-stats.active {
     display: flex;
+    opacity: 1;
 }
 
 @keyframes fadeInOut {
-    0% { opacity: 0; }
-    20% { opacity: 1; }
-    80% { opacity: 1; }
-    100% { opacity: 0; }
+    0% { opacity: 0; transform: translateY(10px); }
+    10% { opacity: 1; transform: translateY(0); }
+    90% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-10px); }
 }
 
 /* Progress Colors */
