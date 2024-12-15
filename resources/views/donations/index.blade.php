@@ -213,6 +213,7 @@
                 <!-- Existing modal body content -->
                 <div id="modal-body-payer" class="modal-body p-4">
                     <div class="payment-method-selector mb-4">
+                        @if(env('MANUAL_PAYMENT_MODE', false))
                         <div class="row g-3">
                             <div class="col-6">
                                 <div class="payment-option" data-method="mercadopago">
@@ -242,6 +243,14 @@
                                 </div>
                             </div>
                         </div>
+                        @else
+                        <input type="hidden" 
+                               name="payment_method" 
+                               id="mercadopago" 
+                               value="mercadopago" 
+                               checked 
+                               required>
+                        @endif
                     </div>
 
                     <form id="donationForm" class="needs-validation" method="POST" enctype="multipart/form-data" novalidate>
@@ -440,6 +449,7 @@
             interval: {{ config('app.payment_check_interval', 5000) }},
             maxTime: {{ config('app.payment_check_max_time', 300000) }}
         };
+        const manualPaymentEnabled = {{ env('MANUAL_PAYMENT_MODE', false) ? 'true' : 'false' }};
     </script>
     <script src="{{ asset('assets/js/donations.js') }}"></script>
 </body>

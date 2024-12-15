@@ -234,30 +234,34 @@ function initDonationForm() {
         const originalButtonText = submitButton.innerHTML;
         
         // Garantir que o método de pagamento está correto
-        const paymentMethod = document.querySelector('input[name="payment_method"]:checked');
-        if (!paymentMethod) {
-            const alertElement = document.getElementById('alert-donation');
-            alertElement.classList.remove('d-none');
-            alertElement.textContent = 'Por favor, selecione um método de pagamento.';
-            return;
+        let paymentMethod = document.querySelector('input[name="payment_method"]:checked');
+        let paymentMethodValue = 'mercadopago'; // Valor padrão
+
+        // Se PIX Manual estiver habilitado, validar a seleção
+        if (manualPaymentEnabled) {
+            if (!paymentMethod) {
+                const alertElement = document.getElementById('alert-donation');
+                alertElement.classList.remove('d-none');
+                alertElement.textContent = 'Por favor, selecione um método de pagamento.';
+                return;
+            }
+            paymentMethodValue = paymentMethod.value;
         }
         
         // Remover e readicionar o método de pagamento para garantir o valor correto
         formData.delete('payment_method');
-        formData.append('payment_method', paymentMethod.value);
+        formData.append('payment_method', paymentMethodValue);
         
         // Converter o valor corretamente
         let value = formData.get('value');
         if (value) {
-            // Remover pontos e trocar vírgula por ponto
             value = value.replace(/\./g, '').replace(',', '.');
-            // Converter para número (float)
             value = parseFloat(value);
             formData.set('value', value);
         }
 
         // Validar se é pagamento manual e tem comprovante
-        if (paymentMethod.value === 'manual') {
+        if (paymentMethodValue === 'manual') {
             const proofFile = document.getElementById('proof_file').files[0];
             if (!proofFile) {
                 const alertElement = document.getElementById('alert-donation');
@@ -494,6 +498,33 @@ function initPaymentMethodSelector() {
     const manualInfoText = document.querySelector('.manual-info');
     const proofFile = document.getElementById('proof_file');
     const alertElement = document.getElementById('alert-donation');
+    const manualPaymentOption = document.querySelector('.payment-option[data-method="manual"]');
+    const paymentMethodSelector = document.querySelector('.payment-method-selector');
+
+    // Controlar visibilidade do PIX Manual baseado na configuração
+    if (!manualPaymentEnabled) {
+        // Ocultar todo o seletor de método de pagamento
+        if (paymentMethodSelector) {
+            paymentMethodSelector.style.display = 'none';
+        }
+
+        // Ocultar opção de PIX Manual
+        if (manualPaymentOption) {
+            manualPaymentOption.parentElement.style.display = 'none';
+        }
+
+        // Garantir que Mercado Pago esteja selecionado
+        const mercadoPagoRadio = document.getElementById('mercadopago');
+        if (mercadoPagoRadio) {
+            mercadoPagoRadio.checked = true;
+            updatePaymentView('mercadopago', false);
+        }
+
+        // Mostrar informações do Mercado Pago
+        if (mercadopagoInfo) {
+            mercadopagoInfo.classList.remove('d-none');
+        }
+    }
 
     // Função para atualizar a visualização baseada no método selecionado
     function updatePaymentView(method, showAlert = false) {
@@ -543,7 +574,6 @@ function initPaymentMethodSelector() {
     radios.forEach(radio => {
         radio.addEventListener('change', function() {
             alertElement.classList.add('d-none');
-            // Passar true como segundo argumento apenas quando o usuário seleciona manualmente
             updatePaymentView(this.value, true);
         });
     });
@@ -554,7 +584,6 @@ function initPaymentMethodSelector() {
         modal.addEventListener('show.bs.modal', function() {
             const selectedMethod = document.querySelector('input[name="payment_method"]:checked');
             if (selectedMethod) {
-                // Passar false como segundo argumento para não mostrar o alerta na inicialização
                 updatePaymentView(selectedMethod.value, false);
             }
         });
@@ -636,9 +665,9 @@ function resetDonationForm() {
         form.classList.remove('was-validated');
     }
     
-    if (mercadoPagoRadio) {
+    // Sempre resetar para Mercado Pago se PIX Manual estiver desabilitado
+    if (mercadoPagoRadio && !manualPaymentEnabled) {
         mercadoPagoRadio.checked = true;
-        // Disparar evento change para atualizar a visualização
         mercadoPagoRadio.dispatchEvent(new Event('change'));
     }
     
