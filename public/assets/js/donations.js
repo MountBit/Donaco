@@ -254,8 +254,6 @@ function initDonationForm() {
             // Converter para número (float)
             value = parseFloat(value);
             formData.set('value', value);
-            
-            console.log('Valor sendo enviado:', value); // Debug
         }
 
         // Validar se é pagamento manual e tem comprovante
@@ -272,13 +270,6 @@ function initDonationForm() {
         submitButton.disabled = true;
         submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processando...';
 
-        // Debug dos dados antes do envio
-        console.log('Dados do formulário:', {
-            payment_method: formData.get('payment_method'),
-            value: formData.get('value'),
-            all: Object.fromEntries(formData)
-        });
-
         fetch(donationStoreUrl, {
             method: 'POST',
             headers: {
@@ -294,7 +285,6 @@ function initDonationForm() {
             }
             
             const data = await response.json();
-            console.log('Resposta do servidor:', data);
             
             if (!response.ok) {
                 throw new Error(data.message || 'Erro ao processar doação');
@@ -552,7 +542,6 @@ function initPaymentMethodSelector() {
     // Adicionar evento change para os radios
     radios.forEach(radio => {
         radio.addEventListener('change', function() {
-            console.log('Método de pagamento alterado:', this.value);
             alertElement.classList.add('d-none');
             // Passar true como segundo argumento apenas quando o usuário seleciona manualmente
             updatePaymentView(this.value, true);
@@ -607,7 +596,6 @@ function startPaymentCheck(externalReference) {
             if (attempts < maxAttempts) {
                 setTimeout(checkStatus, checkInterval);
             } else {
-                console.log('Tempo máximo de verificação atingido');
                 // Opcional: mostrar mensagem para o usuário
                 const approvedModal = document.getElementById('modal-body-approved');
                 approvedModal.classList.remove('d-none');
