@@ -464,8 +464,37 @@ function initPaymentMethodSelector() {
     const alertElement = document.getElementById('alert-donation');
 
     // Função para atualizar a visualização baseada no método selecionado
-    function updatePaymentView(method) {
+    function updatePaymentView(method, showAlert = false) {
         if (method === 'manual') {
+            // Mostrar alerta elegante apenas se showAlert for true
+            if (showAlert) {
+                Swal.fire({
+                    title: 'Atenção!',
+                    html: `
+                        <div class="text-start">
+                            <p>Para fazer uma doação PIX Manual, siga estes passos:</p>
+                            <ol>
+                                <li>Preencha o formulário.</li>
+                                <li>A Chave PIX se encontra após "Valor da doação".</li>
+                                <li>Realize a transferência PIX.</li>
+                                <li>Salve o comprovante de pagamento.</li>
+                                <li>Anexe o comprovante no formulário.</li>
+                                <li>Clique em "Continuar" para finalizar a doação.</li>
+                            </ol>
+                        </div>
+                    `,
+                    icon: 'info',
+                    confirmButtonText: 'Entendi',
+                    confirmButtonColor: '#ffc107',
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    }
+                });
+            }
+
             manualInfo.classList.remove('d-none');
             mercadopagoInfo.classList.add('d-none');
             manualInfoText.classList.remove('d-none');
@@ -483,7 +512,8 @@ function initPaymentMethodSelector() {
         radio.addEventListener('change', function() {
             console.log('Método de pagamento alterado:', this.value);
             alertElement.classList.add('d-none');
-            updatePaymentView(this.value);
+            // Passar true como segundo argumento apenas quando o usuário seleciona manualmente
+            updatePaymentView(this.value, true);
         });
     });
 
@@ -493,7 +523,8 @@ function initPaymentMethodSelector() {
         modal.addEventListener('show.bs.modal', function() {
             const selectedMethod = document.querySelector('input[name="payment_method"]:checked');
             if (selectedMethod) {
-                updatePaymentView(selectedMethod.value);
+                // Passar false como segundo argumento para não mostrar o alerta na inicialização
+                updatePaymentView(selectedMethod.value, false);
             }
         });
     }

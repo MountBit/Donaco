@@ -12,7 +12,10 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/donations.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap-4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/animate.min.css') }}">
     <link rel="icon" href="{{ getenv('LOGO_ICON_URL') }}" type="image/png">
+    <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>
 </head>
 
 <body>
@@ -210,7 +213,6 @@
                 <!-- Existing modal body content -->
                 <div id="modal-body-payer" class="modal-body p-4">
                     <div class="payment-method-selector mb-4">
-                        <h6 class="mb-3">Escolha a forma de pagamento:</h6>
                         <div class="row g-3">
                             <div class="col-6">
                                 <div class="payment-option" data-method="mercadopago">
@@ -342,16 +344,15 @@
                 <!-- No modal-body-payment -->
                 <div id="modal-body-payment" class="modal-body p-4 d-none">
                     <div class="text-center mb-4">
-                        <h5 class="mb-3">Pagamento via PIX</h5>
-                        <p class="text-muted mb-4">Escaneie o QR Code abaixo ou copie o código PIX</p>
+                        <p class="text-muted mb-2">Escaneie o QR Code abaixo ou copie o código PIX</p>
                         
-                        <div class="qr-code-container mb-4">
+                        <div class="qr-code-container mb-2">
                             <img id="image-qrcode-pix" src="" alt="QR Code PIX" style="display: none; max-width: 200px; margin: 0 auto;">
                         </div>
                         
                         <div class="pix-code-container">
                             <div class="form-group">
-                                <label for="code-pix" class="form-label">Código PIX</label>
+                                <label for="code-pix" class="form-label">Copia e Cola PIX</label>
                                 <div class="input-group">
                                     <textarea id="code-pix" class="form-control" rows="3" readonly></textarea>
                                     <button class="btn btn-outline-secondary position-relative" type="button" id="copyButton" title="Copiar código PIX">
@@ -430,9 +431,8 @@
             </div>
         </div>
     </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+    <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
     <script>
         const donationStoreUrl = "{{ route('donations.stored') }}";
         const donationStatusRoute = "{{ route('donations.status', ':externalReference') }}";
