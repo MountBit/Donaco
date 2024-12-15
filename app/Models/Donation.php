@@ -22,14 +22,15 @@ class Donation extends Model
      * @var array
      */
     protected $fillable = [
-        'external_reference',
+        'project_id',
         'nickname',
         'email',
         'message',
-        'status',
         'value',
-        'phone',
-        'project_id',
+        'external_reference',
+        'status',
+        'payment_method',
+        'proof_file',
         'message_hidden',
         'message_hidden_reason'
     ];

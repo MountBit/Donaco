@@ -21,16 +21,23 @@ class DonationRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'project_id' => 'required|exists:projects,id',
-            'nickname'   => ['required', 'string', 'min:2', 'max:255', 'regex:/^[\p{L}\s\-0-9]+$/u'],
-            'email'      => 'required|email:rfc,dns',
-            'value'      => ['required', 'numeric', 'min:0.01', 'max:999999.99'],
-            'message'    => ['nullable', 'string', 'max:500', 'regex:/^[\p{L}\s\-0-9.,!?]+$/u'],
+            'nickname' => ['required', 'string', 'min:2', 'max:255'],
+            'email' => 'required|email',
+            'message' => ['nullable', 'string', 'max:1000'],
+            'value' => ['required'],
+            'payment_method' => 'required|in:mercadopago,manual',
         ];
+
+        if ($this->input('payment_method') === 'manual') {
+            $rules['proof_file'] = 'required|file|mimes:pdf,png,jpg,jpeg|max:2048';
+        }
+
+        return $rules;
     }
 
-     /**
+    /**
      * Custom error messages for validation rules.
      */
     public function messages(): array
@@ -47,6 +54,40 @@ class DonationRequest extends FormRequest
             'value.numeric'       => 'O valor da doação deve ser numérico. Utilize o formato correto.',
             'value.min'           => 'O valor mínimo de doação é de R$ 0,01.',
             'message.max'         => 'A mensagem não pode ter mais de :max caracteres.',
+            'proof_file.required_if' => 'O comprovante de pagamento é obrigatório para doações manuais.',
+            'proof_file.mimes' => 'O comprovante deve ser um arquivo PDF, PNG ou JPG.',
+            'proof_file.max' => 'O comprovante não pode ter mais que 2MB.'
         ];
+    }
+
+    protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
+    {
+        throw new \Illuminate\Http\Exceptions\HttpResponseException(
+            response()->json([
+                'status' => 'error',
+                'message' => $validator->errors()->first()
+            ], 422)
+        );
+    }
+
+    protected function prepareForValidation()
+    {
+        if ($this->has('value')) {
+            $value = $this->value;
+            
+            // Se o valor já estiver no formato correto (com ponto decimal)
+            if (is_numeric($value)) {
+                $value = (float) $value;
+            } else {
+                // Remover pontos de milhar e trocar vírgula por ponto
+                $value = str_replace('.', '', $value);
+                $value = str_replace(',', '.', $value);
+                $value = (float) $value;
+            }
+            
+            $this->merge([
+                'value' => $value // Manter como float para o Mercado Pago
+            ]);
+        }
     }
 }
