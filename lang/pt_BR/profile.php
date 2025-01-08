@@ -6,6 +6,17 @@ return [
         'title' => 'Informações do Perfil',
         'description' => 'Atualize suas informações de perfil e endereço de e-mail.'
     ],
+    'headers' => [
+        'profile_information' => 'Informações do Perfil',
+        'update_password' => 'Atualizar Senha'
+    ],
+    'forms' => [
+        'name' => 'Nome',
+        'email' => 'Email',
+        'current_password' => 'Senha Atual',
+        'new_password' => 'Nova Senha',
+        'confirm_password' => 'Confirma Senha'
+    ],
     'password' => [
         'title' => 'Atualizar Senha',
         'description' => 'Certifique-se de que sua conta esteja usando uma senha longa e aleatória para se manter segura.',
@@ -25,6 +36,8 @@ return [
     ],
     'messages' => [
         'profile_updated' => 'Perfil atualizado com sucesso.',
-        'password_updated' => 'Senha atualizada com sucesso.'
+        'password_updated' => 'Senha atualizada com sucesso.',
+        'profile_information_message' => 'Atualize as informações do perfil e o endereço de e-mail da sua conta.',
+        'password_information_message' => 'Certifique-se de que sua conta esteja usando uma senha longa e aleatória para permanecer segura.'
     ]
 ];
