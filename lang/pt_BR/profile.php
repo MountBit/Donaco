@@ -8,6 +8,7 @@ return [
     ],
     'headers' => [
         'profile_information' => 'Informações do Perfil',
+        'profile' => 'Meu Perfil',
         'update_password' => 'Atualizar Senha'
     ],
     'forms' => [
