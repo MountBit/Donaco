@@ -2,11 +2,11 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('Detalhes da Doação') }}
+                {{ __('donations.headers.show') }}
             </h2>
             <a href="{{ route('admin.donations.index') }}" 
                class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
-                Voltar para lista
+                {{ __('donations.forms.back_to_list') }}
             </a>
         </div>
     </x-slot>
@@ -18,46 +18,46 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <p class="text-gray-600 dark:text-gray-300 mb-2">
-                                <span class="font-semibold">{{ __('Referência Externa') }}:</span> 
+                                <span class="font-semibold">{{ __('donations.forms.external_reference') }}:</span> 
                                 {{ $donation->external_reference }}
                             </p>
                             <p class="text-gray-600 dark:text-gray-300 mb-2">
-                                <span class="font-semibold">{{ __('Nome') }}:</span> 
+                                <span class="font-semibold">{{ __('donations.forms.nickname') }}:</span> 
                                 {{ $donation->nickname }}
                             </p>
                             <p class="text-gray-600 dark:text-gray-300 mb-2">
-                                <span class="font-semibold">{{ __('Email') }}:</span> 
+                                <span class="font-semibold">{{ __('donations.forms.email') }}:</span> 
                                 {{ $donation->email }}
                             </p>
                             <p class="text-gray-600 dark:text-gray-300 mb-2">
-                                <span class="font-semibold">{{ __('Telefone') }}:</span> 
-                                {{ $donation->phone ?? __('Não informado') }}
+                                <span class="font-semibold">{{ __('donations.forms.phone') }}:</span> 
+                                {{ $donation->phone ?? __('donations.forms.not_informed') }}
                             </p>
                         </div>
                         <div>
                             <p class="text-gray-600 dark:text-gray-300 mb-2">
-                                <span class="font-semibold">{{ __('Valor') }}:</span> 
-                                R$ {{ number_format($donation->value, 2, ',', '.') }}
+                                <span class="font-semibold">{{ __('donations.forms.value') }}:</span> 
+                                {{ DonationHelper::formatMoneyValue($donation->value) }}
                             </p>
                             <p class="text-gray-600 dark:text-gray-300 mb-2">
-                                <span class="font-semibold">{{ __('Método de Pagamento') }}:</span> 
+                                <span class="font-semibold">{{ __('donations.forms.payment_method') }}:</span> 
                                 <span class="px-2 py-1 rounded-full text-sm 
                                     {{ $donation->payment_method === 'manual' ? 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200' : 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' }}">
                                     {{ DonationHelper::getPaymentMethodLabel($donation->payment_method) }}
                                 </span>
                             </p>
                             <p class="text-gray-600 dark:text-gray-300 mb-2">
-                                <span class="font-semibold">{{ __('Status') }}:</span> 
+                                <span class="font-semibold">{{ __('donations.forms.status') }}:</span> 
                                 <span class="px-2 py-1 rounded-full text-sm {{ DonationHelper::getStatusClasses($donation->status) }}">
                                     {!! DonationHelper::getStatusIcon($donation->status) !!}{{ DonationHelper::getStatusLabel($donation->status) }}
                                 </span>
                             </p>
                             <p class="text-gray-600 dark:text-gray-300 mb-2">
-                                <span class="font-semibold">{{ __('Projeto') }}:</span> 
+                                <span class="font-semibold">{{ __('donations.forms.project') }}:</span> 
                                 {{ $donation->project->name ?? __('Não associado') }}
                             </p>
                             <p class="text-gray-600 dark:text-gray-300 mb-2">
-                                <span class="font-semibold">{{ __('Data') }}:</span> 
+                                <span class="font-semibold">{{ __('donations.forms.date') }}:</span> 
                                 {{ $donation->created_at->format('d/m/Y H:i') }}
                             </p>
                         </div>
@@ -65,7 +65,7 @@
 
                     @if($donation->message)
                     <div class="mt-6">
-                        <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">{{ __('Mensagem') }}</h2>
+                        <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">{{ __('donations.forms.message') }}</h2>
                         <p class="text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">{{ $donation->message }}</p>
                     </div>
                     @endif
@@ -73,9 +73,16 @@
                     @if($donation->payment_method === 'manual')
                         <div class="mt-6">
                             <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
-                                {{ __('Comprovante de Pagamento') }}
+                                {{ __('donations.forms.proof_file') }}
                             </h2>
                             
+                            @php
+                                // Gera um único token para todas as URLs da página
+                                $accessToken = Cache::remember('proof_access_token_'.$donation->id, now()->addMinutes(5), function() {
+                                    return Str::random(40);
+                                });
+                            @endphp
+
                             @if($proofFileExists && $proofFileUrl)
                                 <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                                     @php
@@ -84,30 +91,32 @@
 
                                     @if(in_array($extension, ['jpg', 'jpeg', 'png']))
                                         <div class="flex flex-col items-center">
-                                            <img src="{{ $proofFileUrl }}" 
-                                                 alt="Comprovante" 
-                                                 class="max-w-md mx-auto rounded-lg shadow-lg mb-2">
-                                            <a href="{{ $proofFileUrl }}" 
+                                            <img src="{{ route('proofs.show', ['filename' => basename($donation->proof_file)]) }}?access_token={{ $accessToken }}" 
+                                                 alt="{{ __('donations.forms.proof_file') }}" 
+                                                 class="max-w-md mx-auto rounded-lg shadow-lg mb-2 transition-opacity duration-300"
+                                                 loading="lazy"
+                                                 onload="this.classList.add('loaded')"
+                                                 onerror="this.onerror=null; this.src='{{ asset('assets/images/error-loading-image.svg') }}'; this.classList.add('error')">
+                                            <a href="{{ route('proofs.show', basename($donation->proof_file)) }}?access_token={{ $accessToken }}" 
                                                download 
                                                class="mt-2 text-blue-500 hover:text-blue-600">
-                                                <i class="fas fa-download mr-1"></i> Download da Imagem
+                                                {{ __('donations.forms.download_proof') }}
                                             </a>
                                         </div>
                                     @elseif($extension === 'pdf')
                                         <div class="flex flex-col items-center">
-                                            <div class="mb-3">
-                                                <i class="fas fa-file-pdf text-red-500 text-4xl"></i>
-                                            </div>
                                             <div class="flex gap-2">
-                                                <a href="{{ $proofFileUrl }}" 
+                                                <a href="{{ route('proofs.show', basename($donation->proof_file)) }}?access_token={{ $accessToken }}" 
                                                    target="_blank" 
-                                                   class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors">
-                                                    <i class="fas fa-eye mr-1"></i> Visualizar PDF
+                                                   class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                                                    <i class="fas fa-eye mr-1"></i> 
+                                                    {{ __('donations.proof.view_pdf') }}
                                                 </a>
-                                                <a href="{{ $proofFileUrl }}" 
+                                                <a href="{{ route('proofs.show', basename($donation->proof_file)) }}?access_token={{ $accessToken }}" 
                                                    download 
-                                                   class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors">
-                                                    <i class="fas fa-download mr-1"></i> Download
+                                                   class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                                                    <i class="fas fa-download mr-1"></i> 
+                                                    {{ __('donations.proof.download') }}
                                                 </a>
                                             </div>
                                         </div>
@@ -119,7 +128,7 @@
                                                 </div>
                                                 <div class="ml-3">
                                                     <p class="text-sm text-yellow-700">
-                                                        Formato de arquivo não suportado.
+                                                        {{ __('donations.proof.unsupported_format') }}
                                                     </p>
                                                 </div>
                                             </div>
@@ -240,7 +249,7 @@
 
     @push('scripts')
     <script>
-    const modalConfig = {
+    window.modalConfig = {
         approve: {
             title: 'Aprovar Doação',
             message: 'Tem certeza que deseja aprovar esta doação? Esta ação não pode ser desfeita.',
@@ -261,7 +270,7 @@
         }
     };
 
-    function showConfirmationModal(action) {
+    window.showConfirmationModal = function(action) {
         const config = modalConfig[action];
         const modal = document.getElementById('confirmation-modal');
         const modalIcon = document.getElementById('modal-icon');
@@ -288,12 +297,9 @@
             modal.querySelector('.transform').classList.add('sm:scale-100');
             modal.querySelector('.transform').classList.remove('sm:scale-95');
         }, 10);
-
-        // Adicionar listener para fechar com ESC
-        document.addEventListener('keydown', handleEscKey);
     }
 
-    function hideConfirmationModal() {
+    window.hideConfirmationModal = function() {
         const modal = document.getElementById('confirmation-modal');
         modal.querySelector('.transform').classList.add('sm:scale-95');
         modal.querySelector('.transform').classList.remove('sm:scale-100');
@@ -301,21 +307,42 @@
         setTimeout(() => {
             modal.classList.add('hidden');
         }, 200);
-
-        // Remover listener do ESC
-        document.removeEventListener('keydown', handleEscKey);
     }
 
-    function handleEscKey(e) {
-        if (e.key === 'Escape') {
-            hideConfirmationModal();
-        }
-    }
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tratamento de erro para imagens
+        const proofImages = document.querySelectorAll('img[alt="{{ __('donations.forms.proof_file') }}"]');
+        proofImages.forEach(img => {
+            // Adiciona classe quando a imagem carrega
+            img.addEventListener('load', function() {
+                this.classList.add('loaded');
+            });
 
-    // Fechar modal ao clicar fora
-    document.getElementById('confirmation-modal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            hideConfirmationModal();
+            // Tratamento de erro
+            img.addEventListener('error', function() {
+                this.onerror = null;
+                this.src = '{{ asset('assets/images/error-loading-image.svg') }}';
+                this.classList.add('error');
+                console.warn('Erro ao carregar imagem do comprovante');
+            });
+        });
+
+        // Modal de confirmação (se existir)
+        const modal = document.getElementById('confirmation-modal');
+        if (modal) {
+            // Fechar modal ao pressionar ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    hideConfirmationModal();
+                }
+            });
+
+            // Fechar modal ao clicar fora
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    hideConfirmationModal();
+                }
+            });
         }
     });
     </script>

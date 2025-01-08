@@ -87,42 +87,46 @@
                                 <div class="border-t dark:border-gray-600 pt-4">
                                     <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">{{ __('Moderação da Mensagem') }}</h3>
                                     
-                                    <div class="flex items-center mb-4">
-                                        <input type="checkbox" id="message_hidden" name="message_hidden" value="1" 
-                                               class="rounded border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600"
-                                               {{ old('message_hidden', $donation->message_hidden) ? 'checked' : '' }}>
-                                        <label for="message_hidden" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                                            {{ __('Ocultar esta mensagem') }}
+                                    <div class="form-check">
+                                        <input type="checkbox" 
+                                               class="form-check-input" 
+                                               name="message_hidden" 
+                                               id="message_hidden" 
+                                               value="1"
+                                               {{ $donation->message_hidden ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="message_hidden">
+                                            Ocultar mensagem
                                         </label>
                                     </div>
 
-                                    <div id="message_hidden_reason_container" class="space-y-2">
-                                        <x-input-label for="message_hidden_reason" :value="__('Motivo da Ocultação')" class="text-sm font-medium text-gray-900 dark:text-gray-100" />
-                                        <select id="message_hidden_reason" name="message_hidden_reason" 
+                                    <div id="message_hidden_reason_container" class="space-y-2" {{ !$donation->message_hidden ? 'style=display:none;' : '' }}>
+                                        <x-input-label for="message_hidden_reason" :value="__('Motivo da Ocultação')" />
+                                        <select id="message_hidden_reason" 
+                                                name="message_hidden_reason" 
                                                 class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
                                             <option value="">{{ __('Selecione um motivo') }}</option>
-                                            <option value="violence" {{ old('message_hidden_reason', $donation->message_hidden_reason) === 'violence' ? 'selected' : '' }}>
+                                            <option value="violence" {{ $donation->message_hidden_reason === 'violence' ? 'selected' : '' }}>
                                                 {{ __('Conteúdo violento') }}
                                             </option>
-                                            <option value="hate_speech" {{ old('message_hidden_reason', $donation->message_hidden_reason) === 'hate_speech' ? 'selected' : '' }}>
+                                            <option value="hate_speech" {{ $donation->message_hidden_reason === 'hate_speech' ? 'selected' : '' }}>
                                                 {{ __('Discurso de ódio') }}
                                             </option>
-                                            <option value="inappropriate" {{ old('message_hidden_reason', $donation->message_hidden_reason) === 'inappropriate' ? 'selected' : '' }}>
+                                            <option value="inappropriate" {{ $donation->message_hidden_reason === 'inappropriate' ? 'selected' : '' }}>
                                                 {{ __('Conteúdo impróprio/sexual') }}
                                             </option>
-                                            <option value="illegal" {{ old('message_hidden_reason', $donation->message_hidden_reason) === 'illegal' ? 'selected' : '' }}>
+                                            <option value="illegal" {{ $donation->message_hidden_reason === 'illegal' ? 'selected' : '' }}>
                                                 {{ __('Conteúdo ilegal') }}
                                             </option>
-                                            <option value="spam" {{ old('message_hidden_reason', $donation->message_hidden_reason) === 'spam' ? 'selected' : '' }}>
+                                            <option value="spam" {{ $donation->message_hidden_reason === 'spam' ? 'selected' : '' }}>
                                                 {{ __('Spam/Propaganda não autorizada') }}
                                             </option>
-                                            <option value="other" {{ old('message_hidden_reason', $donation->message_hidden_reason) === 'other' ? 'selected' : '' }}>
+                                            <option value="other" {{ $donation->message_hidden_reason === 'other' ? 'selected' : '' }}>
                                                 {{ __('Outro motivo') }}
                                             </option>
                                         </select>
-                                        <p id="reason_error" class="mt-1 text-sm text-red-600 dark:text-red-400">
-                                            {{ __('Por favor, selecione um motivo para ocultar a mensagem.') }}
-                                        </p>
+                                        @error('message_hidden_reason')
+                                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                        @enderror
                                     </div>
                                 </div>
                             </div>
@@ -143,27 +147,40 @@
     @push('scripts')
     <script>
         $(document).ready(function() {
-            // Função para validar o motivo da ocultação
-            function validateReason() {
-                const hiddenReason = $('#message_hidden_reason');
-                if ($('#message_hidden').is(':checked')) {
-                    hiddenReason.prop('required', true);
-                    $('#message_hidden_reason_container').show();
-                } else {
-                    hiddenReason.prop('required', false);
-                    $('#message_hidden_reason_container').hide();
+            const messageHiddenCheckbox = $('#message_hidden');
+            const reasonContainer = $('#message_hidden_reason_container');
+            const reasonSelect = $('#message_hidden_reason');
+            const reasonError = $('#reason_error');
+
+            function toggleReasonField() {
+                const isChecked = messageHiddenCheckbox.prop('checked');
+                reasonContainer.toggle(isChecked);
+                reasonSelect.prop('required', isChecked);
+                
+                if (!isChecked) {
+                    reasonSelect.val('');
+                    reasonError.hide();
                 }
             }
 
+            // Inicialização
+            toggleReasonField();
+
             // Event listener para o checkbox
-            $('#message_hidden').change(function() {
-                validateReason();
+            messageHiddenCheckbox.on('change', function() {
+                toggleReasonField();
             });
 
-            // Inicialização
-            if ($('#message_hidden').is(':checked')) {
-                validateReason();
-            }
+            // Validação do formulário
+            $('form').on('submit', function(e) {
+                if (messageHiddenCheckbox.prop('checked') && !reasonSelect.val()) {
+                    e.preventDefault();
+                    reasonError.show();
+                    reasonSelect.focus();
+                } else {
+                    reasonError.hide();
+                }
+            });
         });
     </script>
     @endpush

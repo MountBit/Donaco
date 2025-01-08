@@ -18,7 +18,7 @@
                     <x-nav-link :href="route('admin.donations.index')" :active="request()->routeIs('admin.donations.*')">
                         {{ __('navigation.top.menu.donations') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('projects.index')" :active="request()->routeIs('projects.*')">
+                    <x-nav-link :href="route('admin.projects.index')" :active="request()->routeIs('admin.projects.*')">
                         {{ __('navigation.top.menu.projects') }}
                     </x-nav-link>
                 </div>
@@ -84,7 +84,7 @@
             </x-responsive-nav-link>
 
             <!-- Projetos -->
-            <x-responsive-nav-link :href="route('projects.index')" :active="request()->routeIs('projects.*')">
+            <x-responsive-nav-link :href="route('admin.projects.index')" :active="request()->routeIs('admin.projects.*')">
                 {{ __('navigation.top.menu.projects') }}
             </x-responsive-nav-link>
         </div>

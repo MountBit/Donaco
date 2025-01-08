@@ -1,9 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Doações') }}
+            {{ __('donations.headers.title') }}
         </h2>
     </x-slot>
+
+    <x-notification />
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -15,14 +17,14 @@
                             onclick="showDonationModal()"
                             class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors inline-flex items-center">
                         <i class="fas fa-plus mr-2"></i>
-                        {{ __('Nova Doação') }}
+                        {{ __('donations.headers.create') }}
                     </button>
 
                     <div class="relative">
                         <input type="text" 
                                id="search-desktop"
                                name="search"
-                               placeholder="Pesquisar doações (mínimo 3 caracteres)..."
+                               placeholder="{{ __('donations.search.placeholder') }}"
                                class="w-96 rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 shadow-sm"
                                value="{{ request('search') }}">
                     </div>
@@ -36,7 +38,7 @@
                                 onclick="showDonationModal()"
                                 class="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors inline-flex items-center justify-center">
                             <i class="fas fa-plus mr-2"></i>
-                            {{ __('Nova Doação') }}
+                            {{ __('donations.headers.create') }}
                         </button>
                     </div>
 
@@ -45,7 +47,7 @@
                         <input type="text" 
                                id="search-mobile"
                                name="search"
-                               placeholder="Pesquisar doações..."
+                               placeholder="{{ __('donations.search.placeholder_mobile') }}"
                                class="w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 shadow-sm"
                                value="{{ request('search') }}">
                     </div>
@@ -57,15 +59,15 @@
                         <div class="flex flex-wrap gap-2 sm:gap-4 justify-center sm:justify-start">
                             <a href="{{ route('admin.donations.index', array_merge(request()->except('status'), ['status' => null])) }}" 
                                class="px-3 sm:px-4 py-2 rounded-full text-sm {{ !request('status') ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700' }}">
-                                Todas ({{ $counts['all'] }})
+                                {{ __('donations.filters.all') }} ({{ $counts['all'] }})
                             </a>
                             <a href="{{ route('admin.donations.index', array_merge(request()->except('status'), ['status' => 'pending'])) }}" 
                                class="px-3 sm:px-4 py-2 rounded-full text-sm {{ request('status') === 'pending' ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-gray-700' }}">
-                                {{ DonationHelper::getStatusLabel('pending') }} ({{ $counts['pending'] }})
+                                {{ __('donations.status.pending') }} ({{ $counts['pending'] }})
                             </a>
                             <a href="{{ route('admin.donations.index', array_merge(request()->except('status'), ['status' => 'approved'])) }}" 
                                class="px-3 sm:px-4 py-2 rounded-full text-sm {{ request('status') === 'approved' ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700' }}">
-                                {{ DonationHelper::getStatusLabel('approved') }} ({{ $counts['approved'] }})
+                                {{ __('donations.status.approved') }} ({{ $counts['approved'] }})
                             </a>
                         </div>
                     </div>
@@ -80,22 +82,22 @@
                             <thead class="bg-gray-50 dark:bg-gray-700">
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Data
+                                        {{ __('donations.forms.date') }}
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Doador
+                                        {{ __('donations.forms.nickname') }}
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Valor
+                                        {{ __('donations.forms.value') }}
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Método
+                                        {{ __('donations.forms.payment_method') }}
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Status
+                                        {{ __('donations.forms.status') }}
                                     </th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                        Ações
+                                        {{ __('general.actions.title') }}
                                     </th>
                                 </tr>
                             </thead>
@@ -114,12 +116,12 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                        R$ {{ number_format((float)$donation->value, 2, ',', '.') }}
+                                        {{ DonationHelper::formatMoneyValue($donation->value) }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
                                             {{ $donation->payment_method === 'manual' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' : 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' }}">
-                                            {{ $donation->payment_method === 'manual' ? 'PIX Manual' : 'Mercado Pago' }}
+                                            {{ __('donations.payment_method.' . $donation->payment_method) }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
@@ -134,17 +136,17 @@
                                             @elseif($donation->status === 'rejected')
                                                 <i class="fas fa-times-circle mr-2"></i>
                                             @endif
-                                            {{ DonationHelper::getStatusLabel($donation->status) }}
+                                            {{ __('donations.status.' . $donation->status) }}
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <a href="{{ route('admin.donations.show', $donation) }}" 
                                            class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 mr-3">
-                                            Ver
+                                            {{ __('general.actions.view') }}
                                         </a>
                                         <a href="{{ route('admin.donations.edit', $donation) }}" 
                                            class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300">
-                                            Editar
+                                            {{ __('general.actions.edit') }}
                                         </a>
                                     </td>
                                 </tr>

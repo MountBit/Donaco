@@ -11,7 +11,16 @@
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
-                    <form action="{{ route('projects.store') }}" method="POST">
+                    @if($errors->any())
+                        <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+                            <ul class="list-disc list-inside">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                    <form action="{{ route('admin.projects.store') }}" method="POST">
                         @csrf
                         <div class="mb-4">
                             <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('projects.forms.name') }}</label>
@@ -22,10 +31,20 @@
                         </div>
 
                         <div class="mb-4">
-                            <label for="goal" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Meta de Arrecadação</label>
-                            <div class="input-group">
-                                <span class="input-group-text">R$</span>
-                                <input type="number" step="0.01" min="0" name="goal" id="goal" value="{{ old('goal', '80000.00') }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-900 dark:border-gray-700 dark:text-gray-300" required />
+                            <label for="goal" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Meta de Arrecadação
+                            </label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 sm:text-sm">R$</span>
+                                </div>
+                                <input type="text" 
+                                       name="goal" 
+                                       id="goal" 
+                                       class="money mt-1 block w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm dark:bg-gray-900 dark:border-gray-700 dark:text-gray-300"
+                                       value="{{ old('goal') }}"
+                                       placeholder="0,00"
+                                       required />
                             </div>
                             @error('goal')
                                 <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>

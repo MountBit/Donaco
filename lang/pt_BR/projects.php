@@ -11,8 +11,8 @@ return [
 
     'buttons' => [
         'add_new' => 'Novo Projeto',
-        'view' => 'Visualizar',
-        'back_to_list' => 'Voltar para a Lista',
+        'view' => 'Ver',
+        'back' => 'Voltar',
         'save' => 'Salvar',
         'edit' => 'Editar',
         'update' => 'Atualizar',
@@ -22,7 +22,7 @@ return [
     'fields' => [
         'name' => 'Nome',
         'description' => 'Descrição',
-        'goal' => 'Meta de Arrecadação',
+        'goal' => 'Meta',
         'is_active' => 'Ativo',
         'created_at' => 'Criado em',
         'updated_at' => 'Atualizado em',
@@ -45,9 +45,9 @@ return [
 
     'messages' => [
         'success' => 'Sucesso',
-        'created_success' => 'Projeto criado com sucesso.',
-        'updated_success' => 'Projeto atualizado com sucesso.',
-        'deleted_success' => 'Projeto excluido com sucesso.',
+        'created_success' => 'Projeto criado com sucesso!',
+        'updated_success' => 'Projeto atualizado com sucesso!',
+        'deleted_success' => 'Projeto excluído com sucesso!',
     ],
 
 ];

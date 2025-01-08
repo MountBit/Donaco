@@ -6,21 +6,12 @@ class DonationHelper
 {
     public static function getStatusLabel($status)
     {
-        return match ($status) {
-            'pending' => 'Pendente',
-            'approved' => 'Aprovado',
-            'rejected' => 'Rejeitado',
-            default => ucfirst($status)
-        };
+        return __('donations.status.' . $status);
     }
 
     public static function getPaymentMethodLabel($method)
     {
-        return match ($method) {
-            'manual' => 'PIX Manual',
-            'mercadopago' => 'Mercado Pago',
-            default => ucfirst($method)
-        };
+        return __('donations.payment_method.' . $method);
     }
 
     public static function getStatusClasses($status)
@@ -41,5 +32,21 @@ class DonationHelper
             'rejected' => '<i class="fas fa-times-circle mr-2"></i>',
             default => '<i class="fas fa-circle mr-2"></i>'
         };
+    }
+
+    /**
+     * Formata um valor monetário para exibição
+     *
+     * @param string|float $value
+     * @return string
+     */
+    public static function formatMoneyValue($value): string
+    {
+        // Se o valor vier como string com vírgula, converte para float
+        if (is_string($value)) {
+            $value = str_replace(',', '.', $value);
+        }
+        
+        return 'R$ ' . number_format((float)$value, 2, ',', '.');
     }
 } 

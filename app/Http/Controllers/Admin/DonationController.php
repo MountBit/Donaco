@@ -69,22 +69,47 @@ class DonationController extends Controller
             'phone' => 'sometimes|nullable|string',
             'project_id' => 'sometimes|required|exists:projects,id',
             'message_hidden' => 'sometimes|boolean',
-            'message_hidden_reason' => 'required_if:message_hidden,1|string|nullable'
+            'message_hidden_reason' => 'required_if:message_hidden,1|nullable|string'
         ]);
 
+        // Tratar o checkbox message_hidden
+        if ($request->has('message_hidden')) {
+            $validated['message_hidden'] = true;
+            // Garantir que o motivo está presente quando a mensagem está oculta
+            if (empty($validated['message_hidden_reason'])) {
+                return redirect()->back()
+                    ->withInput()
+                    ->withErrors(['message_hidden_reason' => 'O motivo da ocultação é obrigatório.']);
+            }
+        } else {
+            $validated['message_hidden'] = false;
+            $validated['message_hidden_reason'] = null;
+        }
+
+        // Guardar o status anterior
+        $oldStatus = $donation->status;
+        
+        // Atualizar a doação
         $donation->update($validated);
 
-        if ($request->has('status')) {
+        // Verificar se houve mudança específica de status
+        if (isset($validated['status']) && $oldStatus !== $validated['status']) {
             $message = match($validated['status']) {
                 'approved' => 'Doação aprovada com sucesso!',
                 'rejected' => 'Doação rejeitada com sucesso!',
                 default => 'Status da doação atualizado com sucesso!'
             };
-            
+        } else {
+            $message = 'Doação atualizada com sucesso!';
+        }
+
+        // Se veio da página de edição, redirecionar de volta
+        if ($request->is('*/edit')) {
             return redirect()->back()->with('success', $message);
         }
 
-        return redirect()->route('admin.donations.index')->with('success', 'Doação atualizada com sucesso!');
+        // Caso contrário, redirecionar para o index
+        return redirect()->route('admin.donations.index')->with('success', $message);
     }
 
     public function destroy(Donation $donation)
@@ -149,16 +174,34 @@ class DonationController extends Controller
                 'external_reference' => bin2hex(random_bytes(16))
             ]);
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Doação criada com sucesso!',
-                'donation' => $donation
-            ]);
+            // Se a requisição espera JSON (AJAX)
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Doação criada com sucesso!',
+                    'donation' => $donation
+                ]);
+            }
+
+            // Se for uma requisição normal
+            return redirect()
+                ->route('admin.donations.index')
+                ->with('success', 'Doação criada com sucesso!');
+
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Erro ao criar doação: ' . $e->getMessage()
-            ], 500);
+            // Se a requisição espera JSON (AJAX)
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Erro ao criar doação: ' . $e->getMessage()
+                ], 500);
+            }
+
+            // Se for uma requisição normal
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Erro ao criar doação: ' . $e->getMessage());
         }
     }
 }

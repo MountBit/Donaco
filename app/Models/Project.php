@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Donation;
 
 class Project extends Model
 {
@@ -12,33 +11,59 @@ class Project extends Model
 
     protected $fillable = [
         'name',
-        'goal',
         'description',
+        'goal',
         'is_active'
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'goal' => 'decimal:2'
     ];
 
-    /**
-     * Scope a query to only include active projects.
-     */
-    public function scopeActive($query)
-    {
-        return $query->where('is_active', true);
-    }
+    protected $appends = ['formatted_goal'];
 
-    /**
-     * Get the donations for the project.
-     */
     public function donations()
     {
         return $this->hasMany(Donation::class);
     }
 
+    // Métodos para estatísticas
     public static function getActiveProjectsCount()
     {
-        return self::where('is_active', true)->count();
+        return static::where('is_active', true)->count();
+    }
+
+    public static function getTotalProjects()
+    {
+        return static::count();
+    }
+
+    public static function getProjectsWithMostDonations($limit = 5)
+    {
+        return static::withCount(['donations' => function($query) {
+            $query->where('status', 'approved');
+        }])
+        ->orderByDesc('donations_count')
+        ->limit($limit)
+        ->get();
+    }
+
+    public static function getProjectProgress($projectId)
+    {
+        $project = static::with(['donations' => function($query) {
+            $query->where('status', 'approved');
+        }])->findOrFail($projectId);
+
+        $totalDonations = $project->donations->sum('value');
+        return $project->goal > 0 ? ($totalDonations / $project->goal) * 100 : 0;
+    }
+
+    /**
+     * Formata o valor para exibição em BRL
+     */
+    public function getFormattedGoalAttribute(): string
+    {
+        return 'R$ ' . number_format($this->goal, 2, ',', '.');
     }
 }
