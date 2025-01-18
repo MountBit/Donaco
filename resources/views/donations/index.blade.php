@@ -245,10 +245,12 @@
                         <div class="mb-3">
                             <label for="payment_method" class="form-label">Método de Pagamento</label>
                             <div class="payment-methods">
+                                @if(env('MANUAL_PAYMENT_MODE', false))
                                 <div class="payment-method" data-method="manual" onclick="selectPaymentMethod('manual')">
                                     <i class="fas fa-qrcode"></i>
                                     <span>PIX Manual</span>
                                 </div>
+                                @endif
                                 <div class="payment-method" data-method="mercadopago" onclick="selectPaymentMethod('mercadopago')">
                                     <i class="fas fa-credit-card"></i>
                                     <span>Mercado Pago</span>
