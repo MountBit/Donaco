@@ -66,4 +66,4 @@ class SetupProofStorage extends Command
         $this->info('Permissões: 700 (diretório), 600 (arquivos)');
         $this->info('Link simbólico removido: ' . $publicLink);
     }
-} 
+}
