@@ -58,4 +58,4 @@ class SecureProofAccess
         return \App\Models\Donation::where('proof_file', $dbFilename)
             ->exists();
     }
-} 
+}

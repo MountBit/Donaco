@@ -18,4 +18,4 @@ class LoginRequest extends FormRequest
             'password' => ['required', 'string']
         ];
     }
-} 
+}

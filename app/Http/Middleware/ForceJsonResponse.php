@@ -12,4 +12,4 @@ class ForceJsonResponse
         $request->headers->set('Accept', 'application/json');
         return $next($request);
     }
-} 
+}

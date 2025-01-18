@@ -47,4 +47,4 @@ class DonationController extends Controller
             ]
         ]);
     }
-} 
+}

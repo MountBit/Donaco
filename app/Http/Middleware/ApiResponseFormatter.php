@@ -26,4 +26,4 @@ class ApiResponseFormatter
 
         return $response;
     }
-} 
+}

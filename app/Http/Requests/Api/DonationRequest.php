@@ -23,4 +23,4 @@ class DonationRequest extends FormRequest
             'proof_file' => ['required_if:payment_method,manual', 'file', 'mimes:pdf,png,jpg,jpeg', 'max:2048']
         ];
     }
-} 
+}
