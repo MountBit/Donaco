@@ -54,4 +54,4 @@ class DonationRepositoryTest extends TestCase
             'nickname' => 'Test Donor'
         ]);
     }
-} 
+}

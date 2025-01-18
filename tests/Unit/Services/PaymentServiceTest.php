@@ -65,4 +65,4 @@ class PaymentServiceTest extends TestCase
 
         $this->assertEquals($expectedResult, $result);
     }
-} 
+}

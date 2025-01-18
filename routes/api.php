@@ -17,4 +17,4 @@ Route::prefix('v1')->middleware(['auth:sanctum'])->group(function () {
     
     Route::apiResource('donations', DonationController::class)->except('index');
     Route::apiResource('projects', ProjectController::class)->except('index');
-}); 
+});
