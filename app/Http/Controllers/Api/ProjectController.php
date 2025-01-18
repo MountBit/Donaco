@@ -12,4 +12,4 @@ class ProjectController extends Controller
             'data' => $projects
         ]);
     }
-} 
+}

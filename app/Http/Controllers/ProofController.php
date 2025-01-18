@@ -105,4 +105,4 @@ class ProofController extends Controller
             abort(500, 'Erro ao processar arquivo');
         }
     }
-} 
+}

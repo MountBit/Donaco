@@ -15,4 +15,4 @@ class Notification extends Component
             'notification' => $notification
         ]);
     }
-} 
+}
