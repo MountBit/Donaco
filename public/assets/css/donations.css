@@ -142,13 +142,13 @@ body {
 
 /* Recent Donations Styles */
 .bg-soft-yellow {
-    background-color: #fffaf3;
+    background-color: #FFF9E6;
 }
 
 .title-underline {
-    width: 60px;
+    width: 80px;
     height: 4px;
-    background: var(--bs-warning);
+    background-color: #FFC107;
     margin: 0 auto;
     border-radius: 2px;
 }
@@ -527,4 +527,158 @@ body {
     background-color: #f8f9fa;
     border: 1px solid #dee2e6;
     border-radius: 8px;
+}
+
+.card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.badge.bg-warning {
+    background-color: #FFC107 !important;
+    color: #000;
+    padding: 0.5em 1em;
+    font-weight: 500;
+}
+
+.card-text.text-muted {
+    font-size: 0.875rem;
+}
+
+.rounded-circle {
+    object-fit: cover;
+    border: 2px solid #FFC107;
+}
+
+.message-text {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #666;
+}
+
+.message-text.text-muted {
+    color: #999 !important;
+    font-style: italic;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .col-md-4 {
+        margin-bottom: 1rem;
+    }
+    
+    .card {
+        margin-bottom: 1rem;
+    }
+}
+
+.qr-code-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1rem 0;
+}
+
+.qr-code-container img {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1rem;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 200px;
+    width: 100%;
+    height: auto;
+}
+
+.pix-code-container {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.pix-code-container textarea {
+    font-family: monospace;
+    font-size: 0.9rem;
+    resize: none;
+    background-color: #f8f9fa;
+    border-right: none;
+}
+
+.pix-code-container textarea:focus {
+    background-color: #f8f9fa;
+    box-shadow: none;
+    border-color: #ced4da;
+    border-right: none;
+}
+
+.pix-code-container .btn-outline-secondary {
+    border-left: none;
+    background-color: #f8f9fa;
+}
+
+.pix-code-container .btn-outline-secondary:hover {
+    background-color: #e9ecef;
+    border-color: #ced4da;
+}
+
+.pix-code-container .btn-outline-secondary:focus {
+    box-shadow: none;
+}
+
+.pix-code-container .btn-outline-secondary.copied {
+    background-color: #198754;
+    color: white;
+    border-color: #198754;
+}
+
+.pix-code-container .input-group:focus-within {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    border-radius: 0.375rem;
+}
+
+.copy-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.copy-tooltip.show {
+    opacity: 1;
+}
+
+.payment-method {
+    transition: all 0.3s ease;
+    position: relative;
+    cursor: pointer;
+}
+
+.payment-method.selected {
+    background-color: #f0f9ff;
+    border-color: #3b82f6;
+}
+
+.payment-method.selected::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    color: #3b82f6;
+    font-size: 14px;
 }

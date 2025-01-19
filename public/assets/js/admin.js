@@ -1,7 +1,7 @@
 // Funções de Máscara Monetária
 function initMoneyMask() {
     const moneyInputs = document.querySelectorAll('.money');
-    if (!moneyInputs.length) return; // Se não houver inputs, retorna
+    if (!moneyInputs.length) return;
 
     moneyInputs.forEach(input => {
         input.addEventListener('input', function(e) {
@@ -24,6 +24,14 @@ function initMoneyMask() {
             value = value.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
             
             e.target.value = value;
+        });
+
+        // Adicionar tratamento para o envio do formulário
+        input.form?.addEventListener('submit', function(e) {
+            const value = input.value;
+            // Converter de volta para o formato que o backend espera
+            const numericValue = value.replace(/\./g, '').replace(',', '.');
+            input.value = numericValue;
         });
     });
 }
@@ -130,13 +138,22 @@ const DonationModal = {
             .then(async response => {
                 const data = await response.json();
                 
-                if (!response.ok) {
+                if (!response.ok || data.status === 'error') {
                     throw new Error(data.message || 'Erro ao salvar doação');
                 }
                 
                 // Sucesso
                 this.hide();
-                window.location.reload();
+                
+                // Mostrar notificação usando o componente de notificação
+                if (typeof showNotification === 'function') {
+                    showNotification(data.message, 'success');
+                }
+
+                // Recarregar a página após um pequeno delay
+                setTimeout(() => {
+                    window.location.href = '/admin/donations';
+                }, 1000);
             })
             .catch(error => {
                 const alertElement = document.getElementById('donation-form-alert');
@@ -144,6 +161,12 @@ const DonationModal = {
                     alertElement.textContent = error.message;
                     alertElement.classList.remove('hidden');
                 }
+
+                // Mostrar erro usando o componente de notificação
+                if (typeof showNotification === 'function') {
+                    showNotification(error.message, 'error');
+                }
+
                 console.error('Erro ao salvar doação:', error);
             })
             .finally(() => {

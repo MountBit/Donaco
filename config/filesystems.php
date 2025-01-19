@@ -32,8 +32,7 @@ return [
 
         'local' => [
             'driver' => 'local',
-            'root' => storage_path('app/private'),
-            'serve' => true,
+            'root' => storage_path('app'),
             'throw' => false,
         ],
 
@@ -55,6 +54,23 @@ return [
             'endpoint' => env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
+        ],
+
+        'proofs' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/proofs'),
+            'visibility' => 'private',
+            'throw' => false,
+            'permissions' => [
+                'file' => [
+                    'public' => 0600,
+                    'private' => 0600,
+                ],
+                'dir' => [
+                    'public' => 0700,
+                    'private' => 0700,
+                ],
+            ],
         ],
 
     ],

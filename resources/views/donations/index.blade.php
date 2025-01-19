@@ -16,6 +16,31 @@
     <link rel="stylesheet" href="{{ asset('assets/css/animate.min.css') }}">
     <link rel="icon" href="{{ getenv('LOGO_ICON_URL') }}" type="image/png">
     <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>
+    <style>
+        /* Estilos para o spinner de loading */
+        .spinner-border {
+            width: 1.2rem;
+            height: 1.2rem;
+            border-width: 0.15em;
+        }
+        
+        /* Manter arredondamento do modal */
+        .modal-content {
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+        
+        .modal-header.rounded-top {
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+        }
+        
+        /* Transições suaves */
+        .modal-header,
+        .modal-body {
+            transition: all 0.3s ease-in-out;
+        }
+    </style>
 </head>
 
 <body>
@@ -122,8 +147,7 @@
                         <div class="col-lg-8 mx-auto">
                             <p class="lead mb-4">Sua doação nos mantem ativo.</p>
                             <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                                <button data-bs-toggle="modal" data-bs-target="#modal-donation"
-                                    class="btn btn-warning btn-lg px-4 rounded-4">Doar ❤️</button>
+                                <button type="button" class="btn btn-warning btn-lg px-4 rounded-4" onclick="openDonationModal()">Doar ❤️</button>
                             </div>
                         </div>
                     </div>
@@ -162,28 +186,25 @@
                 <div class="title-underline"></div>
             </div>
 
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <div class="row">
                 @foreach ($recentDonations as $donation)
-                <div class="col">
-                    <div class="card donation-card h-100 border-0 shadow-hover">
+                <div class="col-md-4 mb-4">
+                    <div class="card donation-card h-100 border-0 shadow-sm">
                         <div class="card-body p-4">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="avatar-wrapper me-3">
-                                    <img class="avatar-img" src="{{ $donation['avatar'] }}" alt="Avatar" />
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <img src="{{ $donation['avatar'] }}" alt="Avatar" class="rounded-circle" width="48" height="48">
                                 </div>
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-1">{{ $donation['nickname'] }}</h6>
-                                    <small class="text-muted">{{ $donation['formatted_date'] }}</small>
+                                <div class="flex-grow-1 ms-3">
+                                    <h5 class="card-title mb-0 fw-bold">{{ $donation['nickname'] }}</h5>
+                                    <p class="card-text text-muted small mb-0">{{ $donation['formatted_date'] }}</p>
                                 </div>
-                                <div class="donation-amount ms-3">
-                                    <span class="badge bg-warning-soft text-warning">
-                                        {{ $donation['formatted_value'] }}
-                                    </span>
+                                <div class="ms-auto">
+                                    <span class="badge bg-warning">{{ $donation['formatted_value'] }}</span>
                                 </div>
                             </div>
-
-                            @if($donation['formatted_message'])
-                            <p class="{{ $donation['formatted_message']['class'] }} message-text">
+                            @if(!empty($donation['formatted_message']))
+                                <p class="message-text mt-3 {{ $donation['formatted_message']['class'] }}">
                                 {{ $donation['formatted_message']['text'] }}
                             </p>
                             @endif
@@ -196,191 +217,61 @@
     </div>
     @endif
 
-    <!-- Modal - Doação  -->
-    <div class="modal fade" id="modal-donation" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-md" role="document">
-            <div class="modal-content border-0 shadow-lg donation-modal">
-                <div class="modal-header border-0 bg-warning text-white py-3">
-                    <div class="d-flex align-items-center w-100">
-                        <div class="modal-logo me-3">
-                            <img src="{{ getenv('LOGO_IMAGE_URL') }}" alt="{{ config('app.name') }}" class="rounded-circle bg-white p-1" width="40" height="40">
-                        </div>
-                        <h5 class="modal-title flex-grow-1">Faça sua Doação</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
+    <!-- Modal de Doação -->
+    <div class="modal fade" id="donationModal" tabindex="-1" role="dialog" aria-labelledby="donationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="donationModalLabel">
+                        <i class="fas fa-hand-holding-heart"></i> Faça sua Doação
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-
-                <!-- Existing modal body content -->
-                <div id="modal-body-payer" class="modal-body p-4">
-                    <div class="payment-method-selector mb-4">
-                        @if(env('MANUAL_PAYMENT_MODE', false))
-                        <div class="row g-3">
-                            <div class="col-6">
-                                <div class="payment-option" data-method="mercadopago">
-                                    <input type="radio" 
-                                           name="payment_method" 
-                                           id="mercadopago" 
-                                           value="mercadopago" 
-                                           checked 
-                                           required>
-                                    <label for="mercadopago" class="d-flex flex-column align-items-center">
-                                        <img src="{{ asset('assets/images/mp-logo.png') }}" alt="Mercado Pago" height="40">
-                                        <span class="mt-2">Mercado Pago</span>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="payment-option" data-method="manual">
-                                    <input type="radio" 
-                                           name="payment_method" 
-                                           id="manual" 
-                                           value="manual" 
-                                           required>
-                                    <label for="manual" class="d-flex flex-column align-items-center">
-                                        <i class="fas fa-qrcode fa-2x"></i>
-                                        <span class="mt-2">PIX Manual</span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        @else
-                        <input type="hidden" 
-                               name="payment_method" 
-                               id="mercadopago" 
-                               value="mercadopago" 
-                               checked 
-                               required>
-                        @endif
-                    </div>
-
-                    <form id="donationForm" class="needs-validation" method="POST" enctype="multipart/form-data" novalidate>
+                <div class="modal-body">
+                    <form id="donationForm" action="/donations" method="POST" enctype="multipart/form-data">
                         @csrf
-                        <div id="alert-donation" class="alert alert-danger text-center d-none" role="alert"></div>
-
-                        <div class="compact-form">
-                            <div class="form-floating mb-2">
-                                <input type="text" class="form-control" id="nickname" name="nickname" placeholder="Apelido" required>
-                                <label for="nickname">Apelido</label>
-                            </div>
-
-                            <div class="form-floating mb-2">
-                                <select name="project_id" id="project_id" class="form-select" required>
+                        <div class="mb-3">
+                            <label for="project_id" class="form-label">Selecione um projeto</label>
+                            <select class="form-select" id="project_id" name="project_id" required>
                                     <option value="">Selecione um projeto</option>
-                                    @foreach ($projects as $project)
+                                @foreach($projects as $project)
                                         <option value="{{ $project->id }}">{{ $project->name }}</option>
                                     @endforeach
                                 </select>
-                                <label for="project_id">Projeto</label>
-                                <div class="invalid-feedback">
-                                    Por favor, selecione um projeto.
-                                </div>
                             </div>
 
-                            <div class="form-floating mb-2">
-                                <input type="email" class="form-control" id="email" name="email" placeholder="nome@exemplo.com" required>
-                                <label for="email">Email</label>
-                                <div class="form-text text-muted small">
-                                    <i class="fas fa-lock me-1"></i> Seu email não será compartilhado.
-                                </div>
-                            </div>
+                        <input type="hidden" id="selected_payment_method" name="payment_method" value="">
 
-                            <div class="form-floating mb-2">
-                                <textarea class="form-control" id="message" name="message" placeholder="Mensagem" style="height: 60px"></textarea>
-                                <label for="message">Mensagem (opcional)</label>
+                        <div class="mb-3">
+                            <label for="payment_method" class="form-label">Método de Pagamento</label>
+                            <div class="payment-methods">
+                                @if(env('MANUAL_PAYMENT_MODE', false))
+                                <div class="payment-method" data-method="manual" onclick="selectPaymentMethod('manual')">
+                                    <i class="fas fa-qrcode"></i>
+                                    <span>PIX Manual</span>
+                                </div>
+                                @endif
+                                <div class="payment-method" data-method="mercadopago" onclick="selectPaymentMethod('mercadopago')">
+                                    <i class="fas fa-credit-card"></i>
+                                    <span>Mercado Pago</span>
                             </div>
+                            </div>
+                        </div>
 
-                            <div class="mb-3">
-                                <label class="form-label small fw-bold mb-1">Valor da doação</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light">R$</span>
-                                    <input type="text"
-                                        class="form-control money"
-                                        id="value"
-                                        name="value"
-                                        placeholder="0,00"
-                                        required
-                                        autocomplete="off"
-                                        inputmode="numeric">
-                                </div>
-                            </div>
+                        <div id="manual-content" class="payment-content" style="display: none;">
+                        </div>
+                        
+                        <div id="mercadopago-content" class="payment-content" style="display: none;">
+                </div>
 
-                            <div id="manual-payment-info" class="d-none mb-3">
-                                <div class="pix-info-box p-3 bg-light rounded mb-3">
-                                    <h6 class="mb-2">Dados para transferência PIX</h6>
-                                    <p class="mb-1"><strong>Chave PIX:</strong> {{ env('PIX_KEY') }}</p>
-                                    <p class="mb-1"><strong>Banco:</strong> {{ env('PIX_BANK') }}</p>
-                                    <p class="mb-0"><strong>Beneficiário:</strong> {{ env('PIX_BENEFICIARY') }}</p>
-                                </div>
-                                
-                                <div class="mb-3">
-                                    <label class="form-label">Comprovante de Pagamento</label>
-                                    <input type="file" 
-                                        class="form-control" 
-                                        name="proof_file" 
-                                        id="proof_file" 
-                                        accept=".pdf,.png,.jpg,.jpeg"
-                                        data-required-if-manual="true">
-                                    <div class="invalid-feedback">
-                                        Por favor, envie um comprovante de pagamento.
-                                    </div>
-                                    <div class="form-text">Aceitos: PDF, PNG, JPG (máx. 2MB)</div>
-                                </div>
-                            </div>
-
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-warning text-white fw-bold py-2">
-                                    Continuar
-                                </button>
-                                <div class="text-center payment-method-info">
-                                    <div class="mercadopago-info">
-                                        <div class="d-flex align-items-center justify-content-center small text-muted">
-                                            <img src="{{ asset('assets/images/mp-logo.png') }}" width="20" alt="Mercado Pago" class="me-1" />
-                                            Pagamento via PIX com Mercado Pago
-                                        </div>
-                                    </div>
-                                    <div class="manual-info d-none">
-                                        <div class="d-flex align-items-center justify-content-center small text-muted">
-                                            <i class="fas fa-qrcode me-1"></i>
-                                            Pagamento via PIX Manual
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="common-fields">
+                            <!-- Campos comuns -->
                         </div>
                     </form>
-                </div>
-
-                <!-- No modal-body-payment -->
-                <div id="modal-body-payment" class="modal-body p-4 d-none">
-                    <div class="text-center mb-4">
-                        <p class="text-muted mb-2">Escaneie o QR Code abaixo ou copie o código PIX</p>
-                        
-                        <div class="qr-code-container mb-2">
-                            <img id="image-qrcode-pix" src="" alt="QR Code PIX" style="display: none; max-width: 200px; margin: 0 auto;">
-                        </div>
-                        
-                        <div class="pix-code-container">
-                            <div class="form-group">
-                                <label for="code-pix" class="form-label">Copia e Cola PIX</label>
-                                <div class="input-group">
-                                    <textarea id="code-pix" class="form-control" rows="3" readonly></textarea>
-                                    <button class="btn btn-outline-secondary position-relative" type="button" id="copyButton" title="Copiar código PIX">
-                                        <i class="fas fa-copy"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Modal de aprovação -->
-                <div id="modal-body-approved" class="modal-body p-4 d-none">
-                    <!-- Será preenchido dinamicamente -->
                 </div>
             </div>
         </div>
     </div>
-    <!--// Modal - Doação  -->
 
     <!-- Footer -->
     <footer class="footer py-4" style="background: #1E2129;">
@@ -440,16 +331,33 @@
             </div>
         </div>
     </footer>
+    <!-- Scripts -->
     <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
     <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <!-- Variáveis globais -->
     <script>
-        const donationStoreUrl = "{{ route('donations.stored') }}";
         const donationStatusRoute = "{{ route('donations.status', ':externalReference') }}";
         const paymentCheckConfig = {
-            interval: {{ config('app.payment_check_interval', 5000) }},
-            maxTime: {{ config('app.payment_check_max_time', 300000) }}
+            interval: {{ config('app.payment_check_interval', 15000) }},
+            maxTime: {{ config('app.payment_check_max_time', 600000) }}
         };
         const manualPaymentEnabled = {{ env('MANUAL_PAYMENT_MODE', false) ? 'true' : 'false' }};
+
+        // Inicializar carrossel
+        document.addEventListener('DOMContentLoaded', function() {
+            const projectStats = document.querySelectorAll('.project-stats');
+            let currentIndex = 0;
+
+            function showNextStat() {
+                projectStats.forEach(stat => stat.classList.remove('active'));
+                projectStats[currentIndex].classList.add('active');
+                currentIndex = (currentIndex + 1) % projectStats.length;
+            }
+
+            showNextStat(); // Mostrar primeiro item
+            setInterval(showNextStat, 5000); // Trocar a cada 5 segundos
+        });
     </script>
     <script src="{{ asset('assets/js/donations.js') }}"></script>
 </body>

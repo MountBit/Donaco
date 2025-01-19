@@ -1,0 +1,1 @@
+'unique' => 'O :attribute já está sendo utilizado.', 

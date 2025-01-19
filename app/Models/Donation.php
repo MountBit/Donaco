@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Donation extends Model
 {
@@ -25,11 +26,11 @@ class Donation extends Model
         'project_id',
         'nickname',
         'email',
-        'message',
         'value',
-        'external_reference',
+        'message',
         'status',
         'payment_method',
+        'external_reference',
         'proof_file',
         'message_hidden',
         'message_hidden_reason'
@@ -67,27 +68,42 @@ class Donation extends Model
         return number_format($this->value, 2, ',', '.');
     }
 
+    public function getFormattedMessageAttribute()
+    {
+        if ($this->message_hidden) {
+            return [
+                'text' => 'Mensagem moderada: ' . ($this->message_hidden_reason ?: 'Violação dos termos de uso'),
+                'class' => 'text-muted fst-italic'
+            ];
+        }
+
+        return [
+            'text' => $this->message,
+            'class' => ''
+        ];
+    }
+
     // Dashboard Statistics Methods
     public static function getCurrentMonthDonations()
     {
-        return self::where('status', 'approved')
-            ->whereYear('created_at', now()->year)
-            ->whereMonth('created_at', now()->month)
+        return static::where('status', 'approved')
+            ->whereMonth('created_at', Carbon::now()->month)
+            ->whereYear('created_at', Carbon::now()->year)
             ->count();
     }
 
     public static function getYearTotalAmount()
     {
-        return self::where('status', 'approved')
-            ->whereYear('created_at', now()->year)
+        return static::where('status', 'approved')
+            ->whereYear('created_at', Carbon::now()->year)
             ->sum('value');
     }
 
     public static function getLastMonthDonations()
     {
-        return self::where('status', 'approved')
-            ->whereYear('created_at', now()->year)
-            ->whereMonth('created_at', now()->month - 1)
+        return static::where('status', 'approved')
+            ->whereMonth('created_at', Carbon::now()->subMonth()->month)
+            ->whereYear('created_at', Carbon::now()->subMonth()->year)
             ->count();
     }
 
@@ -145,5 +161,14 @@ class Donation extends Model
             'labels' => $projectsDonations->pluck('project.name'),
             'data' => $projectsDonations->pluck('total')
         ];
+    }
+
+    public static function getRankingDonations($limit = 5)
+    {
+        return static::with('project')
+            ->where('status', 'approved')
+            ->orderByDesc('value')
+            ->take($limit)
+            ->get();
     }
 }

@@ -4,11 +4,11 @@ return [
 
     'top' => [
         'menu' => [
-            'dashboard' => 'Painel',
-            'projects' => 'Projetos',
+            'dashboard' => 'Dashboard',
             'donations' => 'Doações',
+            'projects' => 'Projetos',
             'profile' => 'Perfil',
-            'log_out' => 'Sair',
+            'log_out' => 'Sair'
         ]
     ],
 

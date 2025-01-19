@@ -78,9 +78,9 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'en'),
+    'locale' => 'pt_BR',
 
-    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
+    'fallback_locale' => 'en',
 
     'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
 
@@ -131,8 +131,8 @@ return [
     | Configurações para verificação de status de pagamento
     |
     */
-    'payment_check_interval' => env('PAYMENT_CHECK_INTERVAL', 5000),
-    'payment_check_max_time' => env('PAYMENT_CHECK_MAX_TIME', 300000),
+    'payment_check_interval' => env('PAYMENT_CHECK_INTERVAL', 15000),
+    'payment_check_max_time' => env('PAYMENT_CHECK_MAX_TIME', 600000),
 
     'providers' => [
         // Framework Service Providers...

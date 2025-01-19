@@ -2,259 +2,125 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Donation;
-use App\Http\Requests\UpdateDonationRequest;
-use App\Services\MercadoPagoService;
 use App\Repositories\DonationRepository;
-use App\Http\Requests\DonationRequest;
-use App\Repositories\ProjectRepository;
-use Carbon\Carbon;
+use App\Models\Project;
+use App\Services\PaymentService;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+use Illuminate\Support\Facades\Storage;
 
 class DonationController extends Controller
 {
-    protected $mercadoPagoService;
-    protected $donationRepository;
-    protected $projectRepository;
+    protected DonationRepository $donationRepository;
+    protected PaymentService $paymentService;
 
-    public function __construct(
-        MercadoPagoService $mercadoPagoService,
-        DonationRepository $donationRepository,
-        ProjectRepository $projectRepository
-    ) {
-        $this->mercadoPagoService = $mercadoPagoService;
+    public function __construct(DonationRepository $donationRepository, PaymentService $paymentService)
+    {
         $this->donationRepository = $donationRepository;
-        $this->projectRepository = $projectRepository;
+        $this->paymentService = $paymentService;
     }
 
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(): View
     {
-        // Busca as doações recentes aprovadas
-        $recentDonations = $this->donationRepository->getRecentApprovedDonations();
+        $projects = Project::all();
+        $recentDonations = $this->donationRepository->getRecentDonations();
+        $rankingDonations = $this->donationRepository->getRankingDonations();
+        $projectTotals = $this->donationRepository->getProjectTotals();
 
-        // Formata os dados das doações
-        $recentDonations = $recentDonations->map(function ($donation) {
-            $value = is_numeric($donation['value']) ? $donation['value'] : 0;
-            
-            return [
-                'id' => $donation['id'],
-                'nickname' => $donation['nickname'],
-                'value' => $value,
-                'formatted_value' => 'R$ ' . number_format($value, 2, ',', '.'),
-                'formatted_date' => Carbon::parse($donation['created_at'])->format('d/m/y'),
-                'formatted_message' => $this->formatDonationMessage($donation),
-                'avatar' => asset('assets/images/user-placeholder.png'),
-                'project_id' => $donation['project_id']
-            ];
-        });
-
-        // Gera o ranking das doações
-        $rankingDonations = $this->donationRepository->getRankingDonations($recentDonations);
-
-        // Busca todos os projetos para popular o select
-        $projects = $this->projectRepository->getAllProjects();
-
-        // Calcula totais por projeto
-        $projectTotals = [];
-        foreach ($projects as $project) {
-            // Pegar todas as doações aprovadas do projeto
-            $projectDonations = $recentDonations->where('project_id', $project->id);
-            
-            // Calcular o total de doações
-            $totalAmount = $projectDonations->sum('value');
-            
-            // Contar todos os doadores (não apenas únicos)
-            $totalDonors = $projectDonations->count();
-            
-            $goal = $project->goal ?? 80000.00;
-            $progress = ($totalAmount / $goal) * 100;
-
-            $projectTotals[$project->id] = [
-                'name' => $project->name,
-                'total_amount' => $totalAmount,
-                'total_donors' => $totalDonors,
-                'goal' => $goal,
-                'progress' => $progress
-            ];
-        }
-
-        return view('donations.index', compact('recentDonations', 'rankingDonations', 'projects', 'projectTotals'));
-    }
-
-    /**
-     * Format donation message based on visibility settings
-     */
-    private function formatDonationMessage($donation)
-    {
-        if (!$donation['message']) {
-            return null;
-        }
-
-        if ($donation['message_hidden']) {
-            return [
-                'text' => __('messages.removed_message'),
-                'class' => 'text-sm text-gray-500 dark:text-gray-400 italic'
-            ];
-        }
-
-        return [
-            'text' => $donation['message'],
-            'class' => 'text-sm text-gray-700 dark:text-gray-300'
+        // Dados do PIX Manual
+        $pixManualData = [
+            'key' => config('pix.manual_key'),
+            'type' => config('pix.manual_type'),
+            'name' => config('pix.manual_name'),
+            'enabled' => config('pix.manual_enabled', false)
         ];
+
+        return view('donations.index', compact(
+            'projects',
+            'recentDonations',
+            'rankingDonations',
+            'projectTotals',
+            'pixManualData'
+        ));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(DonationRequest $request)
+    public function store(Request $request)
     {
         try {
-            $validated = $request->validated();
-            
-            // Debug do valor recebido
-            \Log::info('Valor recebido:', [
-                'raw_value' => $request->input('value'),
-                'validated_value' => $validated['value']
+            // Log dos dados recebidos
+            \Log::info('Dados da doação recebidos:', $request->all());
+
+            $data = $request->validate([
+                'project_id' => 'required|exists:projects,id',
+                'nickname' => 'required|string|max:255',
+                'email' => 'required|email|max:255',
+                'value' => 'required|string|regex:/^\d+(?:,\d{2})?$/',
+                'message' => 'nullable|string|max:500',
+                'payment_method' => 'required|in:mercadopago,manual',
+                'proof_file' => 'required_if:payment_method,manual|file|mimes:pdf,png,jpg,jpeg|max:2048',
             ]);
 
-            // Converter valor para formato correto
-            $value = (float) $validated['value'];
-            
-            if ($value <= 0) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'O valor da doação deve ser maior que zero'
-                ], 422);
-            }
-
-            $externalReference = bin2hex(random_bytes(16));
-            
-            // Processar o arquivo de comprovante se for pagamento manual
-            $proofFile = null;
-            if ($validated['payment_method'] === 'manual' && $request->hasFile('proof_file')) {
-                try {
-                    $proofFile = $request->file('proof_file')->store('proof_files', 'public');
-                } catch (\Exception $e) {
-                    \Log::error('Erro ao salvar arquivo:', ['error' => $e->getMessage()]);
-                    return response()->json([
-                        'status' => 'error',
-                        'message' => 'Erro ao salvar o comprovante. Por favor, tente novamente.'
-                    ], 500);
+            // Trata o valor baseado no método de pagamento
+            if ($data['payment_method'] === 'mercadopago') {
+                // Converte para centavos para o Mercado Pago
+                $value = str_replace(['.', ','], '', $data['value']); // Remove pontos e vírgulas
+                $value = ltrim($value, '0'); // Remove zeros à esquerda
+                if (strlen($value) === 1) {
+                    $value = '0.0' . $value; // Adiciona zeros para centavos (ex: 1 -> 0.01)
+                } elseif (strlen($value) === 2) {
+                    $value = '0.' . $value; // Adiciona zero para centavos (ex: 10 -> 0.10)
+                } else {
+                    $value = substr_replace($value, '.', -2, 0); // Adiciona ponto antes dos últimos 2 dígitos
                 }
+                $data['value'] = (float) $value;
+            } else {
+                // Para outros métodos, mantém o formato decimal
+                $data['value'] = str_replace(',', '.', $data['value']);
             }
 
-            // Criar a doação
-            $donationData = [
-                'project_id' => $validated['project_id'],
-                'nickname' => htmlspecialchars($validated['nickname']),
-                'email' => $validated['email'],
-                'message' => isset($validated['message']) ? htmlspecialchars($validated['message']) : null,
-                'value' => $value,
-                'external_reference' => $externalReference,
-                'status' => 'pending',
-                'payment_method' => $validated['payment_method'],
-                'proof_file' => $proofFile,
-            ];
+            // Processar o pagamento
+            $paymentResult = $this->paymentService->processPayment($data);
 
-            $donation = $this->donationRepository->create($donationData);
-
-            if (!$donation) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Erro ao salvar doação'
-                ], 500);
-            }
-
-            // Se for pagamento manual, retornar sucesso
-            if ($validated['payment_method'] === 'manual') {
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'Doação registrada com sucesso! Aguardando aprovação.',
-                    'payment_method' => 'manual'
+            if ($paymentResult['success']) {
+                // Criar a doação
+                $donationData = array_merge($data, [
+                    'status' => $paymentResult['status'],
+                    'external_reference' => $paymentResult['external_reference']
                 ]);
-            }
 
-            // Se for Mercado Pago, continuar com o fluxo existente
-            try {
-                $paymentData = $this->mercadoPagoService->createPayment(
-                    $validated['nickname'],
-                    $validated['email'],
-                    $value, // Valor já está como float
-                    $externalReference
-                );
+                // Se for pagamento manual e tiver arquivo de comprovante
+                if ($request->hasFile('proof_file')) {
+                    $file = $request->file('proof_file');
+                    $fileName = time() . '_' . $file->getClientOriginalName();
+                    $file->storeAs('', $fileName, 'proofs');
+                    $donationData['proof_file'] = 'proofs/' . $fileName;
+                }
+
+                $donation = $this->donationRepository->create($donationData);
 
                 return response()->json([
-                    'status' => 'success',
-                    'code' => $paymentData['qr_code'],
-                    'qr_code_base64' => $paymentData['qr_code_base64'],
-                    'ticket_url' => $paymentData['ticket_url'],
-                    'external_reference' => $externalReference,
-                    'payment_method' => 'mercadopago'
+                    'success' => true,
+                    'message' => __('donations.messages.created_success'),
+                    'data' => [
+                        'donation_id' => $donation->id,
+                        'qr_code' => $paymentResult['qr_code'] ?? null,
+                        'qr_code_base64' => $paymentResult['qr_code_base64'] ?? null,
+                        'ticket_url' => $paymentResult['ticket_url'] ?? null,
+                        'external_reference' => $paymentResult['external_reference']
+                    ]
                 ]);
-            } catch (\Exception $e) {
-                \Log::error('Erro Mercado Pago:', [
-                    'error' => $e->getMessage(),
-                    'value_type' => gettype($value),
-                    'value' => $value
-                ]);
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Erro ao criar pagamento: ' . $e->getMessage()
-                ], 500);
             }
         } catch (\Exception $e) {
-            \Log::error('Erro ao criar doação:', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'request_data' => $request->all()
+            \Log::error('Erro ao processar doação:', [
+                'error' => $e->getMessage(),
+                'data' => $request->all()
             ]);
-            
+
             return response()->json([
-                'status' => 'error',
-                'message' => 'Erro ao processar doação: ' . $e->getMessage()
-            ], 500);
+                'success' => false,
+                'message' => __('donations.messages.errors.donation_failed'),
+                'error' => $e->getMessage()
+            ], 422);
         }
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Donation $donation)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Donation $donation)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateDonationRequest $request, Donation $donation)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Donation $donation)
-    {
-        //
     }
 }
