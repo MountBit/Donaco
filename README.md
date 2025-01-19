@@ -41,11 +41,26 @@ Uma interface acolhedora e otimizada para incentivar doações.
 
 ![Página Principal](https://github.com/user-attachments/assets/e0f6e342-24a3-47e8-acf6-fefb5046bf20)
 
+### TELA DE DOAÇÃO VIA MERCADO PAGO
+![screeshot-qrcode-donaco](https://github.com/user-attachments/assets/790c8aa1-752f-4695-877b-b55b59204dae)
+
+### TELA DE DOAÇÃO MANUAL
+![screeshot-manual-donaco](https://github.com/user-attachments/assets/80be6dde-9f5a-4487-8040-56da2b0c9fee)
+
+
+
 
 ### Dashboard Administrativo
 Controle total dos seus projetos e doações.
 
 ![Dashboard](https://github.com/user-attachments/assets/cf3b7657-29e1-4ffb-971a-dcae324976e7)
+
+### TELA DE DOAÇÃO FEITA VIA MERCADO PAGO
+![image](https://github.com/user-attachments/assets/ec286701-7c0a-48a4-8034-e9ae653e815d)
+
+### TELA DE APROVAÇÃO DE DOAÇÃO MANUAL
+![screeshot-aprovacao-manual-donaco](https://github.com/user-attachments/assets/74a13fda-e6ae-432c-b37e-e5b73f7ff066)
+
 
 
 ---
