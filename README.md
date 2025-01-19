@@ -80,6 +80,10 @@ Donaco está em constante evolução. Buscamos sempre adicionar novas funcionali
 ### 💖 Como Apoiar Financeiramente
 Toda doação é um agradecimento que fortalece nossa comunidade. Contribua com o que puder — cada centavo faz a diferença!
 
+QR-CODE PIX.
+
+![QR-CODE PIX](https://github.com/user-attachments/assets/a65b9d7d-8d59-4c79-9e5a-15d5e3996dd2)
+
 ---
 
 ## Requisitos do Sistema
