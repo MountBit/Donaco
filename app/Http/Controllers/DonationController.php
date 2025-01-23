@@ -8,21 +8,27 @@ use App\Services\PaymentService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Storage;
+use App\Repositories\ProjectRepository;
 
 class DonationController extends Controller
 {
     protected DonationRepository $donationRepository;
     protected PaymentService $paymentService;
+    protected ProjectRepository $projectRepository;
 
-    public function __construct(DonationRepository $donationRepository, PaymentService $paymentService)
-    {
+    public function __construct(
+        DonationRepository $donationRepository, 
+        PaymentService $paymentService,
+        ProjectRepository $projectRepository
+    ) {
         $this->donationRepository = $donationRepository;
         $this->paymentService = $paymentService;
+        $this->projectRepository = $projectRepository;
     }
 
     public function index(): View
     {
-        $projects = Project::all();
+        $projects = $this->projectRepository->getAllProjects();
         $recentDonations = $this->donationRepository->getRecentDonations();
         $rankingDonations = $this->donationRepository->getRankingDonations();
         $projectTotals = $this->donationRepository->getProjectTotals();
