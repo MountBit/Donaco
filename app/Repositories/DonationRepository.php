@@ -112,26 +112,31 @@ class DonationRepository
 
     public function getProjectTotals()
     {
+        // Primeiro, obtém todos os projetos ativos
+        $projects = Project::where('is_active', true)->get();
+
+        // Obtém as doações aprovadas
         $donations = Donation::with('project')
             ->where('status', 'approved')
             ->selectRaw('project_id, SUM(value) as total_value, COUNT(DISTINCT nickname) as total_donors')
             ->groupBy('project_id')
             ->get();
 
-        $projects = Project::whereIn('id', $donations->pluck('project_id'))->get();
-
-        return $donations->mapWithKeys(function ($item) use ($projects) {
-            $project = $projects->firstWhere('id', $item->project_id);
-            $progress = $project->goal > 0 ? ($item->total_value / $project->goal) * 100 : 0;
+        // Cria um array com todos os projetos, mesmo os que não têm doações
+        return $projects->mapWithKeys(function ($project) use ($donations) {
+            $donation = $donations->firstWhere('project_id', $project->id);
+            $totalValue = $donation ? $donation->total_value : 0;
+            $totalDonors = $donation ? $donation->total_donors : 0;
+            $progress = $project->goal > 0 ? ($totalValue / $project->goal) * 100 : 0;
             
             return [
-                $item->project_id => [
+                $project->id => [
                     'name' => $project->name,
-                    'total_amount' => $item->total_value,
-                    'total_donors' => $item->total_donors,
+                    'total_amount' => $totalValue,
+                    'total_donors' => $totalDonors,
                     'goal' => $project->goal,
                     'progress' => $progress,
-                    'formatted_total' => 'R$ ' . number_format($item->total_value, 2, ',', '.'),
+                    'formatted_total' => 'R$ ' . number_format($totalValue, 2, ',', '.'),
                     'formatted_goal' => 'R$ ' . number_format($project->goal, 2, ',', '.')
                 ]
             ];

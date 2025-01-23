@@ -51,12 +51,42 @@
                 <div class="header-logo">
                     <img src="{{ getenv('LOGO_IMAGE_HEADER_URL') }}" alt="{{ config('app.name') }}" height="40">
                 </div>
-                @if(count($projectTotals) > 1)
-                <div class="project-stats-carousel">
-                    @foreach($projectTotals as $projectId => $project)
-                    <div class="project-stats header-stats">
+                @if(!empty($projectTotals) && count($projectTotals) > 0)
+                    @if(count($projectTotals) > 1)
+                    <div class="project-stats-carousel">
+                        @foreach($projectTotals as $projectId => $project)
+                        <div class="project-stats header-stats">
+                            <div class="project-info">
+                                <div class="project-name" title="{{ $project['name'] }}">{{ $project['name'] }}</div>
+                                <div class="project-supporters">
+                                    <div class="stat-label">Apoiadores</div>
+                                    <div class="stat-value">{{ $project['total_donors'] }}</div>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Arrecadado</div>
+                                <div class="stat-value success">R$ {{ number_format($project['total_amount'], 2, ',', '.') }}</div>
+                            </div>
+                            <div class="stat-item meta-stat">
+                                <div class="stat-label">Meta</div>
+                                <div class="stat-value">R$ {{ number_format($project['goal'], 2, ',', '.') }}</div>
+                            </div>
+                            <div class="stat-item progress-stat">
+                                <div class="stat-label">Progresso</div>
+                                <div class="stat-value {{ $project['progress'] >= 80 ? 'progress-success' : ($project['progress'] >= 50 ? 'progress-warning' : 'progress-danger') }}">
+                                    {{ number_format($project['progress'], 2, ',', '.') }}%
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                    @else
+                    <div class="header-stats">
+                        @foreach($projectTotals as $project)
                         <div class="project-info">
-                            <div class="project-name" title="{{ $project['name'] }}">{{ $project['name'] }}</div>
+                            <div class="project-name" title="{{ $project['name'] }}">
+                                {{ $project['name'] }}
+                            </div>
                             <div class="project-supporters">
                                 <div class="stat-label">Apoiadores</div>
                                 <div class="stat-value">{{ $project['total_donors'] }}</div>
@@ -76,35 +106,32 @@
                                 {{ number_format($project['progress'], 2, ',', '.') }}%
                             </div>
                         </div>
+                        @endforeach
                     </div>
-                    @endforeach
-                </div>
+                    @endif
                 @else
                 <div class="header-stats">
                     <div class="project-info">
-                        <div class="project-name" title="{{ $projectTotals[key($projectTotals)]['name'] ?? '' }}">
-                            {{ $projectTotals[key($projectTotals)]['name'] ?? '' }}
+                        <div class="project-name" title="Sem Projeto Ativo">
+                            Sem Projeto Ativo
                         </div>
                         <div class="project-supporters">
                             <div class="stat-label">Apoiadores</div>
-                            <div class="stat-value">{{ $projectTotals[key($projectTotals)]['total_donors'] ?? 0 }}</div>
+                            <div class="stat-value">0</div>
                         </div>
                     </div>
                     <div class="stat-item">
                         <div class="stat-label">Arrecadado</div>
-                        <div class="stat-value success">R$ {{ number_format($projectTotals[key($projectTotals)]['total_amount'] ?? 0, 2, ',', '.') }}</div>
+                        <div class="stat-value success">R$ {{ number_format(0, 2, ',', '.') }}</div>
                     </div>
                     <div class="stat-item meta-stat">
                         <div class="stat-label">Meta</div>
-                        <div class="stat-value">R$ {{ number_format($projectTotals[key($projectTotals)]['goal'] ?? 80000, 2, ',', '.') }}</div>
+                        <div class="stat-value">R$ {{ number_format(0, 2, ',', '.') }}</div>
                     </div>
                     <div class="stat-item progress-stat">
                         <div class="stat-label">Progresso</div>
-                        <div class="stat-value {{ 
-                                $projectTotals[key($projectTotals)]['progress'] >= 80 ? 'progress-success' : 
-                                ($projectTotals[key($projectTotals)]['progress'] >= 50 ? 'progress-warning' : 'progress-danger') 
-                            }}">
-                            {{ number_format($projectTotals[key($projectTotals)]['progress'] ?? 0, 2, ',', '.') }}%
+                        <div class="stat-value progress-danger">
+                            {{ number_format(0, 2, ',', '.') }}%
                         </div>
                     </div>
                 </div>
@@ -337,7 +364,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     <!-- Variáveis globais -->
     <script>
-        const donationStatusRoute = "{{ route('donations.status', ':externalReference') }}";
+        const donationStatusRoute = "{{ secure_url(str_replace(url('/'), '', route('donations.status', ':externalReference'))) }}";
         const paymentCheckConfig = {
             interval: {{ config('app.payment_check_interval', 15000) }},
             maxTime: {{ config('app.payment_check_max_time', 600000) }}
@@ -347,6 +374,9 @@
         // Inicializar carrossel
         document.addEventListener('DOMContentLoaded', function() {
             const projectStats = document.querySelectorAll('.project-stats');
+            
+            // Só inicializa o carrossel se houver projetos
+            if (projectStats && projectStats.length > 0) {
             let currentIndex = 0;
 
             function showNextStat() {
@@ -357,6 +387,7 @@
 
             showNextStat(); // Mostrar primeiro item
             setInterval(showNextStat, 5000); // Trocar a cada 5 segundos
+            }
         });
     </script>
     <script src="{{ asset('assets/js/donations.js') }}"></script>
