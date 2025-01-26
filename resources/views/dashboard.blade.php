@@ -217,7 +217,7 @@
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
-            const chartData = {
+            window.chartData = {
                 labels: @json($chartData['labels']),
                 data: @json($chartData['data'])
             };

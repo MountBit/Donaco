@@ -1,5 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const ctx = document.getElementById('projectsChart').getContext('2d');
+    const ctx = document.getElementById('projectsChart');
+    if (!ctx) return;
+
+    // Destruir qualquer instância existente do gráfico
+    const existingChart = Chart.getChart(ctx);
+    if (existingChart) {
+        existingChart.destroy();
+    }
     
     new Chart(ctx, {
         type: 'doughnut',
