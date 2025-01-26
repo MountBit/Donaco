@@ -215,7 +215,7 @@
     </div>
 
     @push('scripts')
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="{{ asset('assets/js/chart.js') }}"></script>
         <script>
             window.chartData = {
                 labels: @json($chartData['labels']),
