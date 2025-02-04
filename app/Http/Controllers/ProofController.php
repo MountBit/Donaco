@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Donation;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class ProofController extends Controller
 {
@@ -23,7 +26,7 @@ class ProofController extends Controller
         ];
 
         foreach ($paths as $key => $path) {
-            \Log::info("Path check [{$key}]:", [
+            Log::info("Path check [{$key}]:", [
                 'path' => $path,
                 'exists' => file_exists($path),
                 'is_dir' => is_dir($path),
@@ -41,11 +44,11 @@ class ProofController extends Controller
             $cleanFilename = basename(str_replace('proofs/', '', $filename));
 
             // Busca a doação
-            $donation = \App\Models\Donation::where('proof_file', 'proofs/' . $cleanFilename)
+            $donation = Donation::where('proof_file', 'proofs/' . $cleanFilename)
                 ->first();
 
             if (!$donation) {
-                \Log::warning('Doação não encontrada:', ['filename' => $cleanFilename]);
+                Log::warning('Doação não encontrada:', ['filename' => $cleanFilename]);
                 abort(404);
             }
 
@@ -54,7 +57,7 @@ class ProofController extends Controller
             $expectedToken = Cache::get('proof_access_token_'.$donation->id);
 
             if (!$token || $token !== $expectedToken) {
-                \Log::warning('Token inválido:', [
+                Log::warning('Token inválido:', [
                     'filename' => $cleanFilename,
                     'donation_id' => $donation->id
                 ]);
@@ -63,7 +66,7 @@ class ProofController extends Controller
 
             // Verifica se o arquivo existe
             if (!Storage::disk('proofs')->exists($cleanFilename)) {
-                \Log::error('Arquivo não encontrado:', ['filename' => $cleanFilename]);
+                Log::error('Arquivo não encontrado:', ['filename' => $cleanFilename]);
                 abort(404);
             }
 
@@ -83,7 +86,7 @@ class ProofController extends Controller
                     'X-Content-Type-Options' => 'nosniff',
                     'Content-Security-Policy' => "default-src 'self' 'unsafe-inline'",
                     'X-Frame-Options' => 'DENY',
-                    'X-XSS-Protection' => '1; mode=block'
+                    'X-XSS-Protection' => '1; mode=block',
                 ]);
             }
 
@@ -97,10 +100,10 @@ class ProofController extends Controller
                     'Expires' => '0'
                 ]
             );
-        } catch (\Exception $e) {
-            \Log::error('Erro ao processar arquivo:', [
+        } catch (Throwable $e) {
+            Log::error('Erro ao processar arquivo:', [
                 'error' => $e->getMessage(),
-                'filename' => $filename ?? null
+                'filename' => $filename ?? null,
             ]);
             abort(500, 'Erro ao processar arquivo');
         }

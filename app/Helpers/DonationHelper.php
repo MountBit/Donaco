@@ -8,17 +8,17 @@ use Piggly\Pix\StaticPayload;
 
 class DonationHelper
 {
-    public static function getStatusLabel($status)
+    public static function getStatusLabel(string $status)
     {
         return __('donations.status.' . $status);
     }
 
-    public static function getPaymentMethodLabel($method)
+    public static function getPaymentMethodLabel(string $method)
     {
         return __('donations.payment_method.' . $method);
     }
 
-    public static function getStatusClasses($status)
+    public static function getStatusClasses(string $status)
     {
         return match ($status) {
             'pending' => 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200',
@@ -28,7 +28,7 @@ class DonationHelper
         };
     }
 
-    public static function getStatusIcon($status)
+    public static function getStatusIcon(string $status)
     {
         return match ($status) {
             'pending' => '<i class="fas fa-clock mr-2"></i>',
@@ -38,15 +38,8 @@ class DonationHelper
         };
     }
 
-    /**
-     * Formata um valor monetário para exibição
-     *
-     * @param string|float $value
-     * @return string
-     */
-    public static function formatMoneyValue($value): string
+    public static function formatMoneyValue(mixed $value): string
     {
-        // Se o valor vier como string com vírgula, converte para float
         if (is_string($value)) {
             $value = str_replace(',', '.', $value);
         }
@@ -61,5 +54,16 @@ class DonationHelper
             ->setMerchantName(env('PIX_BENEFICIARY'))
             ->setMerchantCity(env('PIX_BENEFICIARY_CITY'))
             ->getQRCode(QrCode::OUTPUT_PNG);
+    }
+
+    public static function convertMoneyToCents(string $value): int
+    {
+        $value = preg_replace('/[^\d]/', '', $value);
+
+        if (strlen($value) < 3) {
+            $value = str_pad($value, 3, '0', STR_PAD_RIGHT);
+        }
+
+        return (int) $value;
     }
 }

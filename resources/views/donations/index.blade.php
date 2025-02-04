@@ -394,7 +394,7 @@
         const PIX_KEY = "{{ config('pix.manual_key') }}";
         const PIX_KEY_QR_CODE = "{{ DonationHelper::getPixKeyQrCode() }}";
         const PIX_BANK = "{{ config('pix.manual_type') }}";
-        const PIX_BENEFICIARY = "{{ config('pix.manual_city') }}";
+        const PIX_BENEFICIARY = "{{ config('pix.manual_name') }}";
 
         // Inicializar carrossel
         document.addEventListener('DOMContentLoaded', function() {

@@ -21,18 +21,16 @@ class PaymentNotificationController extends Controller
         $verify_payment = json_decode(json_encode($response->getData()), true);
 
         if (isset($verify_payment['status']) && $verify_payment['status'] === 200) {
-
             // Usando htmlspecialchars() para sanitização
             $externalReference = htmlspecialchars($external_reference);
-
 
             $isPaymentApproved = Donation::where('external_reference', $externalReference)
                 ->where('status', 'approved')
                 ->exists();
 
-
             return response()->json(['status' => $isPaymentApproved ? 'approved' : 'pending']);
         }
+
         return response()->json(['status' => 'pending']);
     }
 
@@ -42,18 +40,17 @@ class PaymentNotificationController extends Controller
         $paymentData = $paymentData->getPaymentStatus($external_reference);
 
         // Check if results exist
-        if (!isset($paymentData['results']) || empty($paymentData['results'])) {
+        if (! isset($paymentData['results']) || empty($paymentData['results'])) {
             return response()->json(['error' => 'Payment not found'], 404);
         }
 
         $donation = Donation::where('external_reference', $paymentData['results'][0]['external_reference'])->first();
 
-        if (!$donation) {
+        if (! $donation) {
             return response()->json(['error' => 'Payment data mismatch'], 400);
         }
 
         if ($paymentData['results'][0]['status'] == "approved") {
-
             $donation->update([
                 'status' => $paymentData['results'][0]['status'],
                 'updated_at' => now(),
@@ -64,5 +61,4 @@ class PaymentNotificationController extends Controller
 
         return response()->json(['status' => 404, 'message' => 'Payment status pending']);
     }
-
 }

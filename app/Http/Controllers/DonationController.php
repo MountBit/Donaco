@@ -7,6 +7,8 @@ use App\Services\PaymentService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use App\Repositories\ProjectRepository;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class DonationController extends Controller
 {
@@ -17,7 +19,7 @@ class DonationController extends Controller
     public function __construct(
         DonationRepository $donationRepository,
         PaymentService $paymentService,
-        ProjectRepository $projectRepository
+        ProjectRepository $projectRepository,
     ) {
         $this->donationRepository = $donationRepository;
         $this->paymentService = $paymentService;
@@ -31,7 +33,6 @@ class DonationController extends Controller
         $rankingDonations = $this->donationRepository->getRankingDonations();
         $projectTotals = $this->donationRepository->getProjectTotals();
 
-        // Dados do PIX Manual
         $pixManualData = [
             'key' => config('pix.manual_key'),
             'type' => config('pix.manual_type'),
@@ -52,7 +53,7 @@ class DonationController extends Controller
     {
         try {
             // Log dos dados recebidos
-            \Log::info('Dados da doação recebidos:', $request->all());
+            Log::info('Dados da doação recebidos:', $request->all());
 
             $data = $request->validate([
                 'project_id' => 'required|exists:projects,id',
@@ -114,8 +115,8 @@ class DonationController extends Controller
                     ]
                 ]);
             }
-        } catch (\Exception $e) {
-            \Log::error('Erro ao processar doação:', [
+        } catch (Throwable $e) {
+            Log::error('Erro ao processar doação:', [
                 'error' => $e->getMessage(),
                 'data' => $request->all()
             ]);
