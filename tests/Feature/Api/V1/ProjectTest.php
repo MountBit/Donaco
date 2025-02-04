@@ -17,7 +17,7 @@ class ProjectTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create();
         $this->token = $this->user->createToken('api-token')->plainTextToken;
     }

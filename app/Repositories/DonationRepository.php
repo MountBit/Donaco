@@ -88,8 +88,8 @@ class DonationRepository
             ->get()
             ->map(function ($donation) {
                 $formattedMessage = $donation->message ? [
-                    'text' => $donation->message_hidden ? 
-                        'Esta mensagem foi removida por violar as regras da comunidade.' : 
+                    'text' => $donation->message_hidden ?
+                        'Esta mensagem foi removida por violar as regras da comunidade.' :
                         $donation->message,
                     'class' => $donation->message_hidden ? 'text-muted fst-italic' : ''
                 ] : null;
@@ -128,7 +128,7 @@ class DonationRepository
             $totalValue = $donation ? $donation->total_value : 0;
             $totalDonors = $donation ? $donation->total_donors : 0;
             $progress = $project->goal > 0 ? ($totalValue / $project->goal) * 100 : 0;
-            
+
             return [
                 $project->id => [
                     'name' => $project->name,
@@ -143,20 +143,20 @@ class DonationRepository
         });
     }
 
-   /* public function getRankingDonations($limit = 5)
-    {
-        $donations = Donation::where('status', 'approved')
-            ->selectRaw('nickname, SUM(value) as total_value')
-            ->groupBy('nickname')
-            ->orderByDesc('total_value')
-            ->take($limit)
-            ->get();
+    /* public function getRankingDonations($limit = 5)
+     {
+         $donations = Donation::where('status', 'approved')
+             ->selectRaw('nickname, SUM(value) as total_value')
+             ->groupBy('nickname')
+             ->orderByDesc('total_value')
+             ->take($limit)
+             ->get();
 
-        return $donations->map(function ($donation) {
-            return [
-                'nickname' => $donation->nickname,
-                'value' => $donation->total_value
-            ];
-        });
-    }*/
+         return $donations->map(function ($donation) {
+             return [
+                 'nickname' => $donation->nickname,
+                 'value' => $donation->total_value
+             ];
+         });
+     }*/
 }

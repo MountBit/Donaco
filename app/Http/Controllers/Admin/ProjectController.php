@@ -16,12 +16,12 @@ class ProjectController extends Controller
     {
         // Remove tudo exceto números
         $value = preg_replace('/[^\d]/', '', $value);
-        
+
         // Se o valor tiver menos de 3 dígitos, completa com zeros à direita
         if (strlen($value) < 3) {
             $value = str_pad($value, 3, '0', STR_PAD_RIGHT);
         }
-        
+
         return (int) $value;
     }
 
@@ -63,7 +63,7 @@ class ProjectController extends Controller
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return redirect()
                 ->back()
                 ->withInput()
@@ -108,7 +108,7 @@ class ProjectController extends Controller
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return redirect()
                 ->back()
                 ->withInput()

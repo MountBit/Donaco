@@ -21,4 +21,4 @@ class HelperServiceProvider extends ServiceProvider
     {
         //
     }
-} 
+}

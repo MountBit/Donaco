@@ -6,12 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Donation;
 use App\Models\Project;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class DonationController extends Controller
 {
-    public function __construct() {}
+    public function __construct()
+    {
+    }
 
     public function index(Request $request)
     {
@@ -25,7 +26,7 @@ class DonationController extends Controller
         // Aplicar pesquisa
         if ($request->has('search') && strlen($request->search) >= 3) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('nickname', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%")
                   ->orWhere('external_reference', 'like', "%{$search}%");
@@ -47,7 +48,8 @@ class DonationController extends Controller
         return view('admin.donations.index', compact('donations', 'counts', 'projects'));
     }
 
-    public function create(){
+    public function create()
+    {
         view('admin.donations.create');
     }
 
@@ -88,7 +90,7 @@ class DonationController extends Controller
 
         // Guardar o status anterior
         $oldStatus = $donation->status;
-        
+
         // Atualizar a doação
         $donation->update($validated);
 

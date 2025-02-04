@@ -16,7 +16,7 @@ class PaymentServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->mercadoPagoService = $this->createMock(MercadoPagoService::class);
         $this->paymentService = new PaymentService($this->mercadoPagoService);
     }
@@ -37,7 +37,7 @@ class PaymentServiceTest extends TestCase
         $this->assertEquals('pending', $result['status']);
         $this->assertNotNull($result['proof_file']);
         $this->assertNotNull($result['external_reference']);
-        
+
         Storage::disk('public')->assertExists($result['proof_file']);
     }
 

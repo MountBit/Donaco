@@ -39,11 +39,11 @@ class ProofController extends Controller
 
             // Limpa o nome do arquivo
             $cleanFilename = basename(str_replace('proofs/', '', $filename));
-            
+
             // Busca a doação
             $donation = \App\Models\Donation::where('proof_file', 'proofs/' . $cleanFilename)
                 ->first();
-            
+
             if (!$donation) {
                 \Log::warning('Doação não encontrada:', ['filename' => $cleanFilename]);
                 abort(404);

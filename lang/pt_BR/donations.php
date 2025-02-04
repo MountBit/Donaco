@@ -1,4 +1,5 @@
 <?php
+
 return [
     'headers' => [
         'title' => 'Doações',
@@ -60,4 +61,4 @@ return [
         'download' => 'Download',
         'unsupported_format' => 'Formato de arquivo não suportado.'
     ]
-]; 
+];

@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Repositories\DonationRepository;
-use App\Services\PaymentService;
 use Illuminate\Support\Collection;
 
 class DonationService
@@ -28,7 +27,7 @@ class DonationService
     {
         // Processa o pagamento
         $paymentData = $this->paymentService->processPayment($data);
-        
+
         // Cria a doação
         return $this->donationRepository->create(array_merge(
             $data,

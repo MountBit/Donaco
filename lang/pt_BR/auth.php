@@ -1,4 +1,5 @@
 <?php
+
 return [
     'failed' => 'Credenciais informadas não correspondem com nossos registros.',
     'password' => 'A senha informada está incorreta.',
@@ -40,4 +41,4 @@ return [
         'resend_button' => 'Reenviar Email de Verificação',
         'logout_button' => 'Sair'
     ]
-]; 
+];

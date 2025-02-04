@@ -74,7 +74,7 @@ class DonationRequest extends FormRequest
     {
         if ($this->has('value')) {
             $value = $this->value;
-            
+
             // Se o valor já estiver no formato correto (com ponto decimal)
             if (is_numeric($value)) {
                 $value = (float) $value;
@@ -84,7 +84,7 @@ class DonationRequest extends FormRequest
                 $value = str_replace(',', '.', $value);
                 $value = (float) $value;
             }
-            
+
             $this->merge([
                 'value' => $value // Manter como float para o Mercado Pago
             ]);

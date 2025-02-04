@@ -14,7 +14,7 @@ class ApiResponseFormatter
 
         if ($response instanceof JsonResponse) {
             $data = $response->getData(true);
-            
+
             $formattedResponse = [
                 'success' => $response->status() < 400,
                 'data' => $data,

@@ -37,7 +37,7 @@ class DonationRepositoryTest extends TestCase
     public function test_create_donation(): void
     {
         $project = Project::factory()->create();
-        
+
         $data = [
             'project_id' => $project->id,
             'nickname' => 'Test Donor',

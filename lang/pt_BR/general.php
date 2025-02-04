@@ -1,4 +1,5 @@
 <?php
+
 return [
     'actions' => [
         'save' => 'Salvar',
@@ -21,4 +22,4 @@ return [
     'back' => 'Voltar',
     'login' => 'Fazer Login',
     'back_to_home' => 'Voltar para a página inicial'
-]; 
+];

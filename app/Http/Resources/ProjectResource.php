@@ -14,7 +14,7 @@ class ProjectResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'goal' => $this->goal,
-            'total_donations' => $this->whenLoaded('donations', function() {
+            'total_donations' => $this->whenLoaded('donations', function () {
                 return $this->donations->where('status', 'approved')->sum('value');
             }),
             'is_active' => $this->is_active,

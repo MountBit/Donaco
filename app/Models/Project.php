@@ -41,7 +41,7 @@ class Project extends Model
 
     public static function getProjectsWithMostDonations($limit = 5)
     {
-        return static::withCount(['donations' => function($query) {
+        return static::withCount(['donations' => function ($query) {
             $query->where('status', 'approved');
         }])
         ->orderByDesc('donations_count')
@@ -51,7 +51,7 @@ class Project extends Model
 
     public static function getProjectProgress($projectId)
     {
-        $project = static::with(['donations' => function($query) {
+        $project = static::with(['donations' => function ($query) {
             $query->where('status', 'approved');
         }])->findOrFail($projectId);
 

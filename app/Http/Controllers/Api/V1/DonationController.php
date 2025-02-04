@@ -28,7 +28,7 @@ class DonationController extends Controller
     {
         $donation = $this->donationService->createDonation($request->validated());
         $donation->load('project');
-        
+
         return response()->json([
             'data' => [
                 'message' => 'Doação criada com sucesso',
@@ -40,7 +40,7 @@ class DonationController extends Controller
     public function show(string $id): JsonResponse
     {
         $donation = $this->donationService->getDonation($id);
-        
+
         return response()->json([
             'data' => [
                 'donation' => new DonationResource($donation)

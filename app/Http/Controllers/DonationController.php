@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Repositories\DonationRepository;
-use App\Models\Project;
 use App\Services\PaymentService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use Illuminate\Support\Facades\Storage;
 use App\Repositories\ProjectRepository;
 
 class DonationController extends Controller
@@ -17,7 +15,7 @@ class DonationController extends Controller
     protected ProjectRepository $projectRepository;
 
     public function __construct(
-        DonationRepository $donationRepository, 
+        DonationRepository $donationRepository,
         PaymentService $paymentService,
         ProjectRepository $projectRepository
     ) {
