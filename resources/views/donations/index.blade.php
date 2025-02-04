@@ -393,6 +393,7 @@
 
         const PIX_KEY = "{{ config('pix.manual_key') }}";
         const PIX_KEY_QR_CODE = "{{ DonationHelper::getPixKeyQrCode() }}";
+        const PIX_KEY_PAYMENT_CODE = "{{ DonationHelper::getPixKeyPaymentCode() }}";
         const PIX_BANK = "{{ config('pix.manual_type') }}";
         const PIX_BENEFICIARY = "{{ config('pix.manual_name') }}";
 
@@ -413,7 +414,7 @@
                 showNextStat(); // Mostrar primeiro item
                 setInterval(showNextStat, 5000); // Trocar a cada 5 segundos
             }
-        });
+        }, { once: true });
     </script>
     <script src="{{ asset('assets/js/donations.js') }}"></script>
 </body>

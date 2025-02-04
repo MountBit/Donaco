@@ -10,6 +10,8 @@ const DonationHandler = {
                 <p class="mb-1"><strong>Banco:</strong> ${PIX_BANK}</p>
                 <p class="mb-0"><strong>Beneficiário:</strong> ${PIX_BENEFICIARY}</p>
                 <div class="d-flex items-center justify-between"><img src="${PIX_KEY_QR_CODE}" alt="qr code" class="mx-auto"/></div>
+                <p class="mb-0"><strong>Pix Copiar/Colar:</strong><textarea id="pix-payment-code" rows=4 style="resize: none;" class="form-control mt-2">${PIX_KEY_PAYMENT_CODE}</textarea></p>
+                <div class="d-flex items-center justify-between"><button id="copy-pix-payment-code" type="button" class="btn btn-secondary mx-auto mt-2">Copiar Qr Code</button></div>
             </div>
 
             <div class="mb-3">
@@ -118,6 +120,12 @@ const DonationHandler = {
 
             // Reinicializar máscaras
             this.initializeMasks();
+
+            $("#copy-pix-payment-code").click(function(){
+                $("#pix-payment-code").select();
+                document.execCommand('copy');
+                alert("Qr Code copiado!");
+            });
         }
     },
 

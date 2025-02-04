@@ -56,6 +56,15 @@ class DonationHelper
             ->getQRCode(QrCode::OUTPUT_PNG);
     }
 
+    public static function getPixKeyPaymentCode(): string
+    {
+        return (new StaticPayload())
+            ->setPixKey(Parser::getKeyType(env('PIX_KEY')), env('PIX_KEY'))
+            ->setMerchantName(env('PIX_BENEFICIARY'))
+            ->setMerchantCity(env('PIX_BENEFICIARY_CITY'))
+            ->getPixCode();
+    }
+
     public static function convertMoneyToCents(string $value): int
     {
         $value = preg_replace('/[^\d]/', '', $value);
