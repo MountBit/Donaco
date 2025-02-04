@@ -1,5 +1,5 @@
 @php
-    $logoUrl = env('LOGO_IMAGE_ADMIN_PAINEL_URL', '');
+    $logoUrl = config('app.logo_icon_url');
 @endphp
 
 @if($logoUrl)
