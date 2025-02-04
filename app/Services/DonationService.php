@@ -20,7 +20,7 @@ class DonationService
 
     public function getAllDonations(): Collection
     {
-        return $this->donationRepository->getAllApproved();
+        return $this->donationRepository->getAllApprovedDonations();
     }
 
     public function createDonation(array $data): mixed

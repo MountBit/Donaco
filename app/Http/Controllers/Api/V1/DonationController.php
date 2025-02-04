@@ -21,6 +21,7 @@ class DonationController extends Controller
     public function index(): ResourceCollection
     {
         $donations = $this->donationService->getAllDonations();
+
         return DonationResource::collection($donations);
     }
 

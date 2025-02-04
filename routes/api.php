@@ -14,6 +14,6 @@ Route::prefix('v1')->group(function () {
 Route::prefix('v1')->middleware(['auth:sanctum'])->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
 
-    Route::apiResource('donations', DonationController::class)->except('index');
-    Route::apiResource('projects', ProjectController::class)->except('index');
+    Route::apiResource('donations', DonationController::class);
+    Route::apiResource('projects', ProjectController::class);
 });

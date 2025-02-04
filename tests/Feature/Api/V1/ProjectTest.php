@@ -26,7 +26,9 @@ class ProjectTest extends TestCase
     {
         Project::factory()->count(3)->create();
 
-        $response = $this->getJson('/api/v1/projects');
+        $response = $this
+            ->withHeader('Authorization', 'Bearer ' . $this->token)
+            ->getJson('/api/v1/projects');
 
         $response->assertStatus(200)
             ->assertJsonCount(3, 'data')

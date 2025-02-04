@@ -22,13 +22,13 @@ class DonationRepositoryTest extends TestCase
 
     public function test_get_all_approved_donations(): void
     {
-        // Criar doações com diferentes status
         Donation::factory()->count(3)->create(['status' => 'approved']);
         Donation::factory()->count(2)->create(['status' => 'pending']);
 
-        $donations = $this->repository->getAllApproved();
+        $donations = $this->repository->getAllApprovedDonations();
 
         $this->assertCount(3, $donations);
+
         $donations->each(function ($donation) {
             $this->assertEquals('approved', $donation->status);
         });

@@ -28,7 +28,9 @@ class DonationTest extends TestCase
 
     public function test_can_list_donations(): void
     {
-        $response = $this->getJson('/api/v1/donations');
+        $response = $this
+            ->withHeader('Authorization', 'Bearer ' . $this->token)
+            ->getJson('/api/v1/donations');
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -41,9 +43,9 @@ class DonationTest extends TestCase
                         'value',
                         'status',
                         'payment_method',
-                        'created_at'
-                    ]
-                ]
+                        'created_at',
+                    ],
+                ],
             ]);
     }
 
@@ -61,7 +63,7 @@ class DonationTest extends TestCase
                 'value' => 100.00,
                 'message' => 'Teste de doação',
                 'payment_method' => 'manual',
-                'proof_file' => $file
+                'proof_file' => $file,
             ]);
 
         $response->assertStatus(201)
@@ -75,7 +77,7 @@ class DonationTest extends TestCase
                         'email',
                         'value',
                         'status',
-                        'payment_method'
+                        'payment_method',
                     ]
                 ]
             ]);
@@ -91,7 +93,7 @@ class DonationTest extends TestCase
                 'nickname' => '',
                 'email' => 'invalid-email',
                 'value' => -100,
-                'payment_method' => 'invalid'
+                'payment_method' => 'invalid',
             ]);
 
         $response->assertStatus(422)
@@ -100,7 +102,7 @@ class DonationTest extends TestCase
                 'nickname',
                 'email',
                 'value',
-                'payment_method'
+                'payment_method',
             ]);
     }
 }
