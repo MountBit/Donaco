@@ -9,6 +9,7 @@ const DonationHandler = {
                 <p class="mb-1"><strong>Chave PIX:</strong> ${PIX_KEY}</p>
                 <p class="mb-1"><strong>Banco:</strong> ${PIX_BANK}</p>
                 <p class="mb-0"><strong>Beneficiário:</strong> ${PIX_BENEFICIARY}</p>
+                <div class="d-flex items-center justify-between"><img src="${PIX_KEY_QR_CODE}" alt="qr code" class="mx-auto"/></div>
             </div>
 
             <div class="mb-3">

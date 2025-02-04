@@ -384,13 +384,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     <!-- Variáveis globais -->
     <script>
-        const donationStatusRoute =
-            "{{ secure_url(str_replace(url('/'), '', route('donations.status', ':externalReference'))) }}";
+        const donationStatusRoute = "{{ secure_url(str_replace(url('/'), '', route('donations.status', ':externalReference'))) }}";
         const paymentCheckConfig = {
-            interval: {{ config('app.payment_check_interval', 15000) }},
-            maxTime: {{ config('app.payment_check_max_time', 600000) }}
+            interval: parseInt("{{ config('app.payment_check_interval', 15000) }}", 10),
+            maxTime: parseInt("{{ config('app.payment_check_max_time', 600000) }}", 10),
         };
-        const manualPaymentEnabled = {{ env('MANUAL_PAYMENT_MODE', false) ? 'true' : 'false' }};
+        const manualPaymentEnabled = Boolean("{{ env('MANUAL_PAYMENT_MODE', false) }}");
+
+        const PIX_KEY = "{{ env('PIX_KEY') }}";
+        const PIX_KEY_QR_CODE = "{{ DonationHelper::getPixKeyQrCode() }}";
+        const PIX_BANK = "{{ env('PIX_BANK') }}";
+        const PIX_BENEFICIARY = "{{ env('PIX_BENEFICIARY') }}";
 
         // Inicializar carrossel
         document.addEventListener('DOMContentLoaded', function() {
@@ -410,9 +414,6 @@
                 setInterval(showNextStat, 5000); // Trocar a cada 5 segundos
             }
         });
-        const PIX_KEY = "{{ env('PIX_KEY') }}";
-        const PIX_BANK = "{{ env('PIX_BANK') }}";
-        const PIX_BENEFICIARY = "{{ env('PIX_BENEFICIARY') }}";
     </script>
     <script src="{{ asset('assets/js/donations.js') }}"></script>
 </body>

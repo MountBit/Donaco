@@ -10,7 +10,8 @@
         "laravel/framework": "^11.9",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
-        "mercadopago/dx-php": "^3.0"
+        "mercadopago/dx-php": "^3.0",
+        "piggly/php-pix": "^3.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
