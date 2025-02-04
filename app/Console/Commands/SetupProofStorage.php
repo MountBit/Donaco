@@ -53,14 +53,14 @@ class SetupProofStorage extends Command
 
         // Ajusta permissões
         chmod($proofsPath, 0700);
-        
+
         // Ajusta permissões dos arquivos existentes
         foreach (glob($proofsPath . '/*') as $file) {
             if (is_file($file)) {
                 chmod($file, 0600);
             }
         }
-        
+
         $this->info("\nConfiguração concluída!");
         $this->info('Diretório de comprovantes: ' . $proofsPath);
         $this->info('Permissões: 700 (diretório), 600 (arquivos)');

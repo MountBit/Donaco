@@ -6,7 +6,6 @@ use App\Models\Donation;
 use App\Models\Project;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -16,9 +15,9 @@ class DashboardController extends Controller
         $currentMonthDonations = Donation::getCurrentMonthDonations();
         $yearTotalAmount = Donation::getYearTotalAmount();
         $lastMonthDonations = Donation::getLastMonthDonations();
-        
+
         // Crescimento percentual
-        $donationGrowth = $lastMonthDonations > 0 
+        $donationGrowth = $lastMonthDonations > 0
             ? round((($currentMonthDonations - $lastMonthDonations) / $lastMonthDonations) * 100, 1)
             : 0;
 
@@ -52,7 +51,7 @@ class DashboardController extends Controller
 
         $chartData = [
             'labels' => $projectDonations->pluck('name')->toArray(),
-            'data' => $projectDonations->pluck('total')->map(function($value) {
+            'data' => $projectDonations->pluck('total')->map(function ($value) {
                 return number_format($value, 2, '.', '');
             })->toArray()
         ];

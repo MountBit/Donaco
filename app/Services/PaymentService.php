@@ -2,9 +2,6 @@
 
 namespace App\Services;
 
-use App\Services\MercadoPagoService;
-use Illuminate\Support\Facades\Storage;
-
 class PaymentService
 {
     protected MercadoPagoService $mercadoPagoService;

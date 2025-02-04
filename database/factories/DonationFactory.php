@@ -20,4 +20,4 @@ class DonationFactory extends Factory
             'external_reference' => bin2hex(random_bytes(16))
         ];
     }
-} 
+}

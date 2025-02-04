@@ -15,4 +15,4 @@ class ProjectFactory extends Factory
             'is_active' => true
         ];
     }
-} 
+}

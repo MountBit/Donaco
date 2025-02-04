@@ -13,12 +13,14 @@ class ProjectController extends Controller
     public function index(): ResourceCollection
     {
         $projects = Project::with('donations')->get();
+
         return ProjectResource::collection($projects);
     }
 
     public function show(Project $project): JsonResponse
     {
         $project->load('donations');
+
         return response()->json([
             'data' => [
                 'project' => new ProjectResource($project)

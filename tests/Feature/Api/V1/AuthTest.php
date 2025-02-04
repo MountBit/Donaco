@@ -12,27 +12,25 @@ class AuthTest extends TestCase
 
     public function test_user_can_login_with_valid_credentials(): void
     {
-        $user = User::factory()->create([
+        User::factory()->create([
             'email' => 'test@example.com',
-            'password' => bcrypt('password')
+            'password' => bcrypt('password'),
         ]);
 
         $response = $this->postJson('/api/v1/login', [
             'email' => 'test@example.com',
-            'password' => 'password'
+            'password' => 'password',
         ]);
 
         $response->assertStatus(200)
             ->assertJsonStructure([
-                'data' => [
-                    'user' => [
-                        'id',
-                        'name',
-                        'email',
-                        'created_at'
-                    ],
-                    'token'
-                ]
+                'user' => [
+                    'id',
+                    'name',
+                    'email',
+                    'created_at',
+                ],
+                'token',
             ]);
     }
 
@@ -40,12 +38,12 @@ class AuthTest extends TestCase
     {
         $response = $this->postJson('/api/v1/login', [
             'email' => 'test@example.com',
-            'password' => 'wrong-password'
+            'password' => 'wrong-password',
         ]);
 
         $response->assertStatus(401)
             ->assertJson([
-                'message' => 'Credenciais inválidas'
+                'message' => 'Credenciais inválidas',
             ]);
     }
 
@@ -59,7 +57,7 @@ class AuthTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'message' => 'Logout realizado com sucesso'
+                'message' => 'Logout realizado com sucesso',
             ]);
 
         $this->assertDatabaseCount('personal_access_tokens', 0);

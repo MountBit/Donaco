@@ -139,12 +139,6 @@ return [
 
     'manual_payment_mode' => filter_var(env('MANUAL_PAYMENT_MODE', false), FILTER_VALIDATE_BOOL),
 
-    'pix' => [
-        'key' => env('PIX_KEY'),
-        'bank' => env('PIX_BANK'),
-        'beneficiary' => env('PIX_BENEFICIARY'),
-    ],
-
     'empresa_name' => env('EMPRESA_NAME'),
 
     'providers' => [

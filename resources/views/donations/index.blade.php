@@ -391,10 +391,10 @@
         };
         const manualPaymentEnabled = Boolean("{{ config('app.manual_payment_mode') }}");
 
-        const PIX_KEY = "{{ config('app.pix.key') }}";
+        const PIX_KEY = "{{ config('pix.manual_key') }}";
         const PIX_KEY_QR_CODE = "{{ DonationHelper::getPixKeyQrCode() }}";
-        const PIX_BANK = "{{ config('app.pix.bank') }}";
-        const PIX_BENEFICIARY = "{{ config('app.pix.beneficiary') }}";
+        const PIX_BANK = "{{ config('pix.manual_type') }}";
+        const PIX_BENEFICIARY = "{{ config('pix.manual_name') }}";
 
         // Inicializar carrossel
         document.addEventListener('DOMContentLoaded', function() {

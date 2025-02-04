@@ -6,13 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Donation;
 use App\Models\Project;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class DonationController extends Controller
 {
-    public function __construct() {}
-
     public function index(Request $request)
     {
         $query = Donation::query();
@@ -25,7 +24,7 @@ class DonationController extends Controller
         // Aplicar pesquisa
         if ($request->has('search') && strlen($request->search) >= 3) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('nickname', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%")
                   ->orWhere('external_reference', 'like', "%{$search}%");
@@ -47,7 +46,8 @@ class DonationController extends Controller
         return view('admin.donations.index', compact('donations', 'counts', 'projects'));
     }
 
-    public function create(){
+    public function create()
+    {
         view('admin.donations.create');
     }
 
@@ -88,7 +88,7 @@ class DonationController extends Controller
 
         // Guardar o status anterior
         $oldStatus = $donation->status;
-        
+
         // Atualizar a doação
         $donation->update($validated);
 
@@ -115,6 +115,7 @@ class DonationController extends Controller
     public function destroy(Donation $donation)
     {
         $donation->delete();
+
         return redirect()->route('admin.donations.index')->with('success', 'Doação excluída com sucesso.');
     }
 
@@ -129,16 +130,16 @@ class DonationController extends Controller
                 if (Storage::disk('public')->exists($donation->proof_file)) {
                     $proofFileUrl = Storage::url($donation->proof_file);
                     $proofFileExists = true;
-                    \Log::info('Arquivo encontrado: ' . $proofFileUrl);
+                    Log::info('Arquivo encontrado: ' . $proofFileUrl);
                 } else {
-                    \Log::warning('Arquivo não encontrado no storage: ' . $donation->proof_file);
+                    Log::warning('Arquivo não encontrado no storage: ' . $donation->proof_file);
                 }
             } else {
-                \Log::info('Doação sem arquivo de comprovante (proof_file é null)');
+                Log::info('Doação sem arquivo de comprovante (proof_file é null)');
             }
-        } catch (\Exception $e) {
-            \Log::error('Erro ao verificar arquivo: ' . $e->getMessage());
-            \Log::error('Stack trace: ' . $e->getTraceAsString());
+        } catch (Throwable $e) {
+            Log::error('Erro ao verificar arquivo: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
         }
 
         return view('admin.donations.show', [
@@ -188,7 +189,7 @@ class DonationController extends Controller
                 ->route('admin.donations.index')
                 ->with('success', 'Doação criada com sucesso!');
 
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
             // Se a requisição espera JSON (AJAX)
             if ($request->expectsJson()) {
                 return response()->json([

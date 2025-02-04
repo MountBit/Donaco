@@ -37,7 +37,7 @@ class MercadoPagoService
             if ($response->failed()) {
                 $originalErrorMessage = $response->json('message');
                 $errorMessage = __('errors.' . $originalErrorMessage, ['message' => $originalErrorMessage]) ?? __('errors.generic_error');
-                
+
                 return [
                     'success' => false,
                     'error' => $errorMessage
