@@ -2,6 +2,10 @@
 
 namespace App\Helpers;
 
+use Piggly\Pix\Enums\QrCode;
+use Piggly\Pix\Parser;
+use Piggly\Pix\StaticPayload;
+
 class DonationHelper
 {
     public static function getStatusLabel($status)
@@ -46,7 +50,16 @@ class DonationHelper
         if (is_string($value)) {
             $value = str_replace(',', '.', $value);
         }
-        
+
         return 'R$ ' . number_format((float)$value, 2, ',', '.');
     }
-} 
+
+    public static function getPixKeyQrCode(): string
+    {
+        return (new StaticPayload())
+            ->setPixKey(Parser::getKeyType(env('PIX_KEY')), env('PIX_KEY'))
+            ->setMerchantName(env('PIX_BENEFICIARY'))
+            ->setMerchantCity(env('PIX_BENEFICIARY_CITY'))
+            ->getQRCode(QrCode::OUTPUT_PNG);
+    }
+}

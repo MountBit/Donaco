@@ -134,6 +134,19 @@ return [
     'payment_check_interval' => env('PAYMENT_CHECK_INTERVAL', 15000),
     'payment_check_max_time' => env('PAYMENT_CHECK_MAX_TIME', 600000),
 
+    'logo_icon_url' => env('LOGO_ICON_URL'),
+    'logo_image_header_url' => env('LOGO_IMAGE_HEADER_URL'),
+
+    'manual_payment_mode' => filter_var(env('MANUAL_PAYMENT_MODE', false), FILTER_VALIDATE_BOOL),
+
+    'pix' => [
+        'key' => env('PIX_KEY'),
+        'bank' => env('PIX_BANK'),
+        'beneficiary' => env('PIX_BENEFICIARY'),
+    ],
+
+    'empresa_name' => env('EMPRESA_NAME'),
+
     'providers' => [
         // Framework Service Providers...
         Illuminate\Auth\AuthServiceProvider::class,

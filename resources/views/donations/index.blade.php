@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap-4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/animate.min.css') }}">
-    <link rel="icon" href="{{ getenv('LOGO_ICON_URL') }}" type="image/png">
+    <link rel="icon" href="{{ config('app.logo_icon_url') }}" type="image/png">
     <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>
     <style>
         /* Estilos para o spinner de loading */
@@ -49,7 +49,7 @@
         <div class="container-fluid px-3">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="header-logo">
-                    <img src="{{ getenv('LOGO_IMAGE_HEADER_URL') }}" alt="{{ config('app.name') }}" height="40">
+                    <img src="{{ config('logo_image_header_url') }}" alt="{{ config('app.name') }}" height="40">
                 </div>
                 @if (!empty($projectTotals) && count($projectTotals) > 0)
                     @if (count($projectTotals) > 1)
@@ -288,7 +288,7 @@
                         <div class="mb-3">
                             <label for="payment_method" class="form-label">Método de Pagamento</label>
                             <div class="payment-methods">
-                                @if (env('MANUAL_PAYMENT_MODE', false))
+                                @if (config('app.manual_payment_mode'))
                                     <div class="payment-method" data-method="manual"
                                         onclick="selectPaymentMethod('manual')">
                                         <i class="fas fa-qrcode"></i>
@@ -363,7 +363,7 @@
             <div class="border-top border-secondary mt-4 pt-4">
                 <div class="row">
                     <div class="col-12 text-center">
-                        <p class="text-white-50 mb-0">&copy; {{ date('Y') }} {{ env('EMPRESA_NAME') }}. Todos os
+                        <p class="text-white-50 mb-0">&copy; {{ date('Y') }} {{ config('app.empresa_name') }}. Todos os
                             direitos reservados.</p>
                         <p class="text-white-50 mb-0" style="font-size: 0.95rem;">
                             Baseado em
@@ -384,13 +384,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
     <!-- Variáveis globais -->
     <script>
-        const donationStatusRoute =
-            "{{ secure_url(str_replace(url('/'), '', route('donations.status', ':externalReference'))) }}";
+        const donationStatusRoute = "{{ secure_url(str_replace(url('/'), '', route('donations.status', ':externalReference'))) }}";
         const paymentCheckConfig = {
-            interval: {{ config('app.payment_check_interval', 15000) }},
-            maxTime: {{ config('app.payment_check_max_time', 600000) }}
+            interval: parseInt("{{ config('app.payment_check_interval', 15000) }}", 10),
+            maxTime: parseInt("{{ config('app.payment_check_max_time', 600000) }}", 10),
         };
-        const manualPaymentEnabled = {{ env('MANUAL_PAYMENT_MODE', false) ? 'true' : 'false' }};
+        const manualPaymentEnabled = Boolean("{{ config('app.manual_payment_mode') }}");
+
+        const PIX_KEY = "{{ config('app.pix.key') }}";
+        const PIX_KEY_QR_CODE = "{{ DonationHelper::getPixKeyQrCode() }}";
+        const PIX_BANK = "{{ config('app.pix.bank') }}";
+        const PIX_BENEFICIARY = "{{ config('app.pix.beneficiary') }}";
 
         // Inicializar carrossel
         document.addEventListener('DOMContentLoaded', function() {
@@ -410,9 +414,6 @@
                 setInterval(showNextStat, 5000); // Trocar a cada 5 segundos
             }
         });
-        const PIX_KEY = "{{ env('PIX_KEY') }}";
-        const PIX_BANK = "{{ env('PIX_BANK') }}";
-        const PIX_BENEFICIARY = "{{ env('PIX_BENEFICIARY') }}";
     </script>
     <script src="{{ asset('assets/js/donations.js') }}"></script>
 </body>
