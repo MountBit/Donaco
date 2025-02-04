@@ -4,6 +4,13 @@ const DonationHandler = {
     currentPaymentMethod: null,
     templates: {
         manual: `
+            <div class="pix-info-box p-3 bg-light rounded mb-3">
+                <h6 class="mb-2">Dados para transferência PIX</h6>
+                <p class="mb-1"><strong>Chave PIX:</strong> ${PIX_KEY}</p>
+                <p class="mb-1"><strong>Banco:</strong> ${PIX_BANK}</p>
+                <p class="mb-0"><strong>Beneficiário:</strong> ${PIX_BENEFICIARY}</p>
+            </div>
+
             <div class="mb-3">
                 <label for="nickname" class="form-label">Nome/Apelido</label>
                 <input type="text" class="form-control" id="nickname" name="nickname" required>
@@ -91,23 +98,23 @@ const DonationHandler = {
         document.querySelectorAll('.payment-method').forEach(el => {
             el.classList.remove('selected');
         });
-        
+
         document.querySelectorAll('.payment-content').forEach(el => {
             el.style.display = 'none';
             el.innerHTML = '';
         });
-        
+
         // Selecionar novo método
         const selectedMethod = document.querySelector(`.payment-method[data-method="${method}"]`);
         const contentElement = document.getElementById(`${method}-content`);
-        
+
         if (selectedMethod && contentElement) {
             selectedMethod.classList.add('selected');
             document.getElementById('selected_payment_method').value = method;
             this.currentPaymentMethod = method;
             contentElement.innerHTML = this.templates[method];
             contentElement.style.display = 'block';
-            
+
             // Reinicializar máscaras
             this.initializeMasks();
         }
@@ -126,7 +133,7 @@ const DonationHandler = {
             paymentMethodInput.value = '';
             this.currentPaymentMethod = null;
         }
-        
+
         const form = document.getElementById('donationForm');
         if (form) form.reset();
     },
@@ -137,7 +144,7 @@ const DonationHandler = {
         const formData = new FormData(form);
         const submitButton = form.querySelector('button[type="submit"]');
         const originalText = submitButton.innerHTML;
-        
+
         submitButton.disabled = true;
         submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processando...';
 
@@ -188,10 +195,10 @@ const DonationHandler = {
             ${message}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         `;
-        
+
         const form = document.getElementById('donationForm');
         form.insertBefore(errorDiv, form.firstChild);
-        
+
         setTimeout(() => errorDiv.remove(), 5000);
     },
 
@@ -227,7 +234,7 @@ const DonationHandler = {
         const originalContentClasses = modalContent.className;
 
         // Verificar o método de pagamento
-        const successMessage = this.currentPaymentMethod === 'mercadopago' 
+        const successMessage = this.currentPaymentMethod === 'mercadopago'
             ? `
                 <h4 class="mb-3">Obrigado pela sua doação!</h4>
                 <p class="mb-4">
@@ -325,10 +332,10 @@ const DonationHandler = {
     startPaymentCheck(externalReference) {
         let checkCount = 0;
         const maxChecks = paymentCheckConfig.maxTime / paymentCheckConfig.interval;
-        
+
         const checkInterval = setInterval(() => {
             checkCount++;
-            
+
             fetch(donationStatusRoute.replace(':externalReference', externalReference))
                 .then(response => response.json())
                 .then(data => {
@@ -351,7 +358,7 @@ const DonationHandler = {
                             alertDiv.className = 'alert alert-warning mt-4';
                             alertDiv.innerHTML = `
                                 <i class="fas fa-exclamation-triangle"></i>
-                                Tempo de espera excedido. Se você já realizou o pagamento, 
+                                Tempo de espera excedido. Se você já realizou o pagamento,
                                 aguarde alguns instantes e atualize a página.
                             `;
                         }
@@ -370,7 +377,7 @@ const DonationHandler = {
             button.innerHTML = '<i class="fas fa-check"></i> Copiado!';
             button.classList.add('btn-success');
             button.disabled = true;
-            
+
             setTimeout(() => {
                 button.innerHTML = originalText;
                 button.classList.remove('btn-success');
