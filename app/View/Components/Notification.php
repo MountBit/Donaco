@@ -9,7 +9,8 @@ class Notification extends Component
     public function render()
     {
         $notification = session('success') ?? session('error');
-        session()->forget(['success', 'error']); // Limpa a sessão após pegar a mensagem
+        // Remover a linha que limpa a sessão
+        // session()->forget(['success', 'error']); // Limpa a sessão após pegar a mensagem
 
         return view('components.notification', [
             'notification' => $notification

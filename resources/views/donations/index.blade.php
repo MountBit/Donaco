@@ -49,7 +49,7 @@
         <div class="container-fluid px-3">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="header-logo">
-                    <img src="{{ config('logo_image_header_url') }}" alt="{{ config('app.name') }}" height="40">
+                    <img src="{{ config('app.logo_image_header_url') }}" alt="{{ config('app.name') }}" height="40">
                 </div>
                 @if (!empty($projectTotals) && count($projectTotals) > 0)
                     @if (count($projectTotals) > 1)

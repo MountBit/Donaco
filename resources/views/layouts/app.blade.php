@@ -42,6 +42,9 @@
             <main>
                 {{ $slot }}
             </main>
+            
+            <!-- Componente de Notificação -->
+            <x-notification />
         </div>
 
         <!-- Scripts do Admin -->
