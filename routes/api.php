@@ -14,6 +14,12 @@ Route::prefix('v1')->group(function () {
 Route::prefix('v1')->middleware(['auth:sanctum'])->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
 
-    Route::apiResource('donations', DonationController::class);
+    Route::apiResource('donations', DonationController::class)->names([
+        'index' => 'api.donations.index',
+        'store' => 'api.donations.store',
+        'show' => 'api.donations.show',
+        'update' => 'api.donations.update',
+        'destroy' => 'api.donations.destroy',
+    ]);
     Route::apiResource('projects', ProjectController::class);
 });
